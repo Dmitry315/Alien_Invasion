@@ -19,13 +19,16 @@ class GameObject:
     # calculates with angle function in main.py
     def move(self, direction):
         dir_x, dir_y = direction
-        angle = calculate_angle(self.x, self.y, dir_x, dir_y)
-        self.x += self.speed * np.cos(int(angle / 180 * np.pi))
+        angle = 360 - calculate_angle(self.x, self.y, dir_x, dir_y)
+        self.x += self.speed * np.cos(angle / 180 * np.pi)
+        self.y += self.speed * np.sin(angle / 180 * np.pi)
+        self.x = int(self.x)
+        self.y = int(self.y)
 
     # return hit boxes of objects
     # for checking collision
     def hit_box(self, sizex, sizey):
-        return pygame.Rect(self.x, self.y, sizex, sizey)
+        return pygame.Rect(self.x + 10, self.y, sizex - 10, sizey)
 
 
 # other rigid objects (Earth, meteorites)
@@ -52,3 +55,25 @@ class Earth(NeutralObject):
     # Earth doesn't move in this game
     def move(self):
         pass
+
+
+class Bullet(NeutralObject):
+    def __init__(self, cords, mouse_cord):
+        self.x = cords[0]
+        self.y = cords[1]
+        self.speed = 10
+        angle = 360 - calculate_angle(self.x, self.y, mouse_cord[0], mouse_cord[1])
+        self.speed_x = self.speed * np.cos(angle / 180 * np.pi)
+        self.speed_y = self.speed * np.sin(angle / 180 * np.pi)
+
+    def move(self):
+        self.x += self.speed_x
+        self.y += self.speed_y
+        self.x = int(self.x)
+        self.y = int(self.y)
+        if self.x > width or self.y > height or self.x < 0 or self.y < 0:
+            return True
+        return False
+
+    def draw_object(self):
+        pygame.draw.circle(windows, (255, 0, 0), (int(self.x), int(self.y)), 3, 0)

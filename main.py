@@ -8,10 +8,10 @@ from ctypes import *
 pygame.init()
 pygame.mouse.set_pos(0, 0)
 # add game constants
-SPEED = 6
+SPEED = 8
 PLAYER_IMAGE = pygame.image.load('spaceship.png')
 EARTH_IMAGE = pygame.image.load('Earth.png')
-FPS = 100
+FPS = 60
 # FPS
 clock = pygame.time.Clock()
 # window size
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     Earth_cords = (width // 2 - 50, height // 2 - 50)
     Earth = Earth(Earth_cords, EARTH_IMAGE)
     earth_hit_box = Earth.hit_box(100, 95)
-
+    bullets = []
     run = True
     # first level cycle
     while run:
@@ -44,6 +44,8 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                bullets.append(Bullet((hero.x + 40, hero.y + 40), pygame.mouse.get_pos()))
         # get pressed keys
         keys = pygame.key.get_pressed()
         # close game on esc
@@ -70,6 +72,15 @@ if __name__ == '__main__':
             print('collided')
         # depict objects
         Earth.draw_object()
+        for i in bullets:
+            flag = i.move()
+            if flag:
+                del i
+            else:
+                i.draw_object()
+                if i.hit_box(6, 6).colliderect(earth_hit_box):
+                    run = False
+                    print('collided')
         # hero follow mouse
         hero.draw_object(pygame.mouse.get_pos())
         pygame.display.update()
