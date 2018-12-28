@@ -1,8 +1,5 @@
-import pygame
-import numpy as np
-from units import Hero, SpaceEnemy
-from GameObject import Earth, Bullet
-from ctypes import windll
+from GameObjects import *
+
 from random import choice
 
 # add player speed
@@ -16,8 +13,6 @@ ENEMY_SPACESHIP = pygame.image.load('enemy_spaceship.png')
 
 clock = pygame.time.Clock()
 
-# window size
-size = width, height = windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)
 
 # init Earth
 earth_cords = (width // 2 - 50, height // 2 - 50)
@@ -29,14 +24,6 @@ hero = Hero((500, 500), SPEED, PLAYER_IMAGE)
 
 # events
 ENEMY_APPEAR = 30
-
-
-# function to calculate angle:
-# for moving and rotating
-def calculate_angle(x1, y1, centrx, centry):
-    delta_x, delta_y = centrx - x1, centry - y1
-    angle = 360 - np.degrees(np.arctan2(delta_y, delta_x))
-    return angle
 
 
 def main():
@@ -101,18 +88,21 @@ def main():
             run = False
             print('collided')
         # depict objects
-        Earth.draw_object()
+        Earth.draw_object(windows)
         for i in bullets:
             flag = i.move()
             if flag:
                 del i
             else:
-                i.draw_object()
+                i.draw_object(windows)
                 if i.hit_box(6, 6).colliderect(earth_hit_box):
                     run = False
                     print('collided')
+
+        for i in enemies:
+            i.move()
         # hero follow mouse
-        hero.draw_object(pygame.mouse.get_pos())
+        hero.draw_object(windows, pygame.mouse.get_pos())
         pygame.display.update()
 
     pygame.quit()

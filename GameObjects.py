@@ -1,6 +1,18 @@
-from main import calculate_angle, width, height
 import pygame
-from numpy import sin, cos, pi
+import numpy as np
+from ctypes import windll
+
+
+# window size
+size = width, height = windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)
+
+
+# function to calculate angle:
+# for moving and rotating
+def calculate_angle(x1, y1, centrx, centry):
+    delta_x, delta_y = centrx - x1, centry - y1
+    angle = 360 - np.degrees(np.arctan2(delta_y, delta_x))
+    return angle
 
 
 # Abstract class of all objects in game
@@ -22,8 +34,8 @@ class GameObject:
     def move(self, direction):
         dir_x, dir_y = direction
         angle = 360 - calculate_angle(self.x, self.y, dir_x, dir_y)
-        self.x += self.speed * cos(angle / 180 * pi)
-        self.y += self.speed * sin(angle / 180 * pi)
+        self.x += self.speed * np.cos(angle / 180 * np.pi)
+        self.y += self.speed * np.sin(angle / 180 * np.pi)
         self.x = int(self.x)
         self.y = int(self.y)
 
@@ -65,8 +77,8 @@ class Bullet(NeutralObject):
         self.y = cords[1]
         self.speed = 10
         angle = 360 - calculate_angle(self.x, self.y, mouse_cord[0], mouse_cord[1])
-        self.speed_x = self.speed * cos(angle / 180 * pi)
-        self.speed_y = self.speed * sin(angle / 180 * pi)
+        self.speed_x = self.speed * np.cos(angle / 180 * np.pi)
+        self.speed_y = self.speed * np.sin(angle / 180 * np.pi)
 
     def move(self):
         self.x += self.speed_x
@@ -79,3 +91,37 @@ class Bullet(NeutralObject):
 
     def draw_object(self, windows):
         pygame.draw.circle(windows, (255, 0, 0), (int(self.x), int(self.y)), 3, 0)
+
+
+# Hero class
+class Hero(GameObject):
+    def __init__(self, cords, speed, image):
+        super().__init__(cords, speed, image)
+        self.x = cords[0]
+        self.y = cords[1]
+        self.speed = speed
+        self.image = image
+
+    # move hero
+    def move(self, xy):
+        self.x += xy[0]
+        self.y += xy[1]
+
+
+class SpaceEnemy(GameObject):
+    def __init__(self, cords, speed, image, direction):
+        super().__init__(cords, speed, image)
+        self.x = cords[0]
+        self.y = cords[1]
+        self.speed = speed
+        self.image = image
+        # it is better to give enemies direction in init
+        self.direction = direction
+
+    # there is no need to give direction in function
+    # all enemies fly in Earth direction
+    def move(self):
+        super().move(self.direction)
+
+    def draw_object(self):
+        super().draw_object(self.direction)
