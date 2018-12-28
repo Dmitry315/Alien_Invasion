@@ -1,4 +1,6 @@
-from main import *
+from main import calculate_angle, width, height
+import pygame
+from numpy import sin, cos, pi
 
 
 # Abstract class of all objects in game
@@ -9,7 +11,7 @@ class GameObject:
         self.speed = speed
         self.image = image
 
-    def draw_object(self, direction):
+    def draw_object(self, windows, direction):
         dir_x, dir_y = direction
         angle = calculate_angle(self.x, self.y, dir_x, dir_y) - 90
         rotated_image = pygame.transform.rotate(self.image, angle)
@@ -20,8 +22,8 @@ class GameObject:
     def move(self, direction):
         dir_x, dir_y = direction
         angle = 360 - calculate_angle(self.x, self.y, dir_x, dir_y)
-        self.x += self.speed * np.cos(angle / 180 * np.pi)
-        self.y += self.speed * np.sin(angle / 180 * np.pi)
+        self.x += self.speed * cos(angle / 180 * pi)
+        self.y += self.speed * sin(angle / 180 * pi)
         self.x = int(self.x)
         self.y = int(self.y)
 
@@ -41,7 +43,7 @@ class NeutralObject(GameObject):
         self.image = image
 
     # there is no need in rotation
-    def draw_object(self):
+    def draw_object(self, windows):
         windows.blit(self.image, (self.x, self.y))
 
 
@@ -63,8 +65,8 @@ class Bullet(NeutralObject):
         self.y = cords[1]
         self.speed = 10
         angle = 360 - calculate_angle(self.x, self.y, mouse_cord[0], mouse_cord[1])
-        self.speed_x = self.speed * np.cos(angle / 180 * np.pi)
-        self.speed_y = self.speed * np.sin(angle / 180 * np.pi)
+        self.speed_x = self.speed * cos(angle / 180 * pi)
+        self.speed_y = self.speed * sin(angle / 180 * pi)
 
     def move(self):
         self.x += self.speed_x
@@ -75,5 +77,5 @@ class Bullet(NeutralObject):
             return True
         return False
 
-    def draw_object(self):
+    def draw_object(self, windows):
         pygame.draw.circle(windows, (255, 0, 0), (int(self.x), int(self.y)), 3, 0)

@@ -1,24 +1,34 @@
 import pygame
 import numpy as np
-from units import *
-from GameObject import *
-from ctypes import *
+from units import Hero, SpaceEnemy
+from GameObject import Earth, Bullet
+from ctypes import windll
+from random import choice
 
-# init game
-pygame.init()
-pygame.mouse.set_pos(0, 0)
-# add game constants
+# add player speed
 SPEED = 8
+# FPS
+FPS = 60
+# load images
 PLAYER_IMAGE = pygame.image.load('spaceship.png')
 EARTH_IMAGE = pygame.image.load('Earth.png')
-FPS = 60
-# FPS
+ENEMY_SPACESHIP = pygame.image.load('enemy_spaceship.png')
+
 clock = pygame.time.Clock()
+
 # window size
 size = width, height = windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)
-# FULLSCREEN
-windows = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-windows.fill((0, 0, 0))
+
+# init Earth
+earth_cords = (width // 2 - 50, height // 2 - 50)
+Earth = Earth(earth_cords, EARTH_IMAGE)
+earth_hit_box = Earth.hit_box(100, 95)
+
+# init hero
+hero = Hero((500, 500), SPEED, PLAYER_IMAGE)
+
+# events
+ENEMY_APPEAR = 30
 
 
 # function to calculate angle:
@@ -29,13 +39,30 @@ def calculate_angle(x1, y1, centrx, centry):
     return angle
 
 
-if __name__ == '__main__':
-    # init hero
-    hero = Hero((500, 500), SPEED, PLAYER_IMAGE)
-    # init Earth
-    Earth_cords = (width // 2 - 50, height // 2 - 50)
-    Earth = Earth(Earth_cords, EARTH_IMAGE)
-    earth_hit_box = Earth.hit_box(100, 95)
+def main():
+    # init game
+    pygame.init()
+    pygame.mouse.set_pos(0, 0)
+    # FULL SCREEN
+    windows = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    windows.fill((0, 0, 0))
+
+    pygame.time.set_timer(ENEMY_APPEAR, 10)
+    enemy_spawn = [
+        (0, 0), (width // 2, 0),
+        (width, 0), (width, height//2),
+        (width, height), (width // 2, height),
+        (0, height), (0, height // 2)
+        # Spawn map:
+        #  * - * - *
+        #  |       |
+        #  *       *
+        #  |       |
+        #  * - * - *
+    ]
+    # init list of enemies and bullets
+    # to check collision
+    enemies = []
     bullets = []
     run = True
     # first level cycle
@@ -44,6 +71,9 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            if event.type == ENEMY_APPEAR:
+                cords = choice(enemy_spawn)
+                enemies.append(SpaceEnemy(cords, 2, ENEMY_SPACESHIP, earth_cords))
             if event.type == pygame.MOUSEBUTTONDOWN:
                 bullets.append(Bullet((hero.x + 40, hero.y + 40), pygame.mouse.get_pos()))
         # get pressed keys
@@ -86,3 +116,7 @@ if __name__ == '__main__':
         pygame.display.update()
 
     pygame.quit()
+
+
+if __name__ == '__main__':
+    main()
