@@ -34,7 +34,7 @@ def main():
     windows = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     windows.fill((0, 0, 0))
 
-    pygame.time.set_timer(ENEMY_APPEAR, 2000)
+    pygame.time.set_timer(ENEMY_APPEAR, 1500)
     enemy_spawn = [
         (0, 0), (width // 2, 0),
         (width, 0), (width, height//2),
@@ -84,7 +84,7 @@ def main():
         # init hero hit box
         hero_hit_box = pygame.Rect(hero.x, hero.y, 80, 80)
         # check collision
-        if hero.hit_box(80, 80).colliderect(earth_hit_box):
+        if hero.hit_box().colliderect(earth_hit_box):
             run = False
             print('collided')
         # depict objects
@@ -106,6 +106,9 @@ def main():
         for num, i in enumerate(enemies):
             i.move()
             i.draw_object(windows)
+            if i.hit_box().colliderect(hero.hit_box()):
+                run = False
+                print('collided')
             if i.hit_box().colliderect(earth_hit_box):
                 run = False
                 print('collided')

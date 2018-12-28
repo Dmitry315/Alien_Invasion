@@ -99,6 +99,9 @@ class Hero(GameObject):
         self.x += xy[0]
         self.y += xy[1]
 
+    def hit_box(self):
+        return super().hit_box(80, 80)
+
 
 class SpaceEnemy(GameObject):
     def __init__(self, cords, speed, image, direction):
