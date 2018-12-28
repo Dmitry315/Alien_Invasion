@@ -48,11 +48,7 @@ class GameObject:
 # other rigid objects (Earth, meteorites)
 class NeutralObject(GameObject):
     def __init__(self, cords, speed, image):
-        super().__init__(cords, 0, image)
-        self.x = cords[0]
-        self.y = cords[1]
-        self.speed = speed
-        self.image = image
+        super().__init__(cords, speed, image)
 
     # there is no need in rotation
     def draw_object(self, windows):
@@ -62,9 +58,6 @@ class NeutralObject(GameObject):
 class Earth(NeutralObject):
     def __init__(self, cords, image):
         super().__init__(cords, 0, image)
-        self.x = cords[0]
-        self.y = cords[1]
-        self.image = image
 
     # Earth doesn't move in this game
     def move(self):
@@ -92,15 +85,14 @@ class Bullet(NeutralObject):
     def draw_object(self, windows):
         pygame.draw.circle(windows, (255, 0, 0), (int(self.x), int(self.y)), 3, 0)
 
+    def hit_box(self):
+        return pygame.Rect(self.x + 10, self.y, 5, 5)
+
 
 # Hero class
 class Hero(GameObject):
     def __init__(self, cords, speed, image):
         super().__init__(cords, speed, image)
-        self.x = cords[0]
-        self.y = cords[1]
-        self.speed = speed
-        self.image = image
 
     # move hero
     def move(self, xy):
@@ -111,10 +103,6 @@ class Hero(GameObject):
 class SpaceEnemy(GameObject):
     def __init__(self, cords, speed, image, direction):
         super().__init__(cords, speed, image)
-        self.x = cords[0]
-        self.y = cords[1]
-        self.speed = speed
-        self.image = image
         # it is better to give enemies direction in init
         self.direction = direction
 
@@ -123,5 +111,8 @@ class SpaceEnemy(GameObject):
     def move(self):
         super().move(self.direction)
 
-    def draw_object(self):
-        super().draw_object(self.direction)
+    def draw_object(self, windows):
+        super().draw_object(windows, self.direction)
+
+    def hit_box(self):
+        return super().hit_box(55, 41)

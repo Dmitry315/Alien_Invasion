@@ -34,7 +34,7 @@ def main():
     windows = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     windows.fill((0, 0, 0))
 
-    pygame.time.set_timer(ENEMY_APPEAR, 10)
+    pygame.time.set_timer(ENEMY_APPEAR, 2000)
     enemy_spawn = [
         (0, 0), (width // 2, 0),
         (width, 0), (width, height//2),
@@ -89,18 +89,35 @@ def main():
             print('collided')
         # depict objects
         Earth.draw_object(windows)
-        for i in bullets:
+        del_list = []
+        for num, i in enumerate(bullets):
             flag = i.move()
             if flag:
-                del i
+                del_list.append(num)
             else:
                 i.draw_object(windows)
-                if i.hit_box(6, 6).colliderect(earth_hit_box):
+                if i.hit_box().colliderect(earth_hit_box):
                     run = False
                     print('collided')
-
-        for i in enemies:
+        for i in range(len(del_list)):
+            del bullets[del_list[i] - i]
+        del_list = []
+        del_list2 = []
+        for num, i in enumerate(enemies):
             i.move()
+            i.draw_object(windows)
+            if i.hit_box().colliderect(earth_hit_box):
+                run = False
+                print('collided')
+            for j in range(len(bullets)):
+                if i.hit_box().colliderect(bullets[j].hit_box()):
+                    del_list.append(num)
+                    del_list2.append(j)
+        for i in range(len(del_list)):
+            del enemies[del_list[i] - i]
+        for i in range(len(del_list2)):
+            del bullets[del_list2[i] - i]
+
         # hero follow mouse
         hero.draw_object(windows, pygame.mouse.get_pos())
         pygame.display.update()
