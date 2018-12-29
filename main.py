@@ -1,7 +1,6 @@
 from GameObjects import *
 from random import choice
 
-clock = pygame.time.Clock()
 
 # init Earth
 earth_cords = (width // 2 - 50, height // 2 - 50)
@@ -9,10 +8,12 @@ Earth = Earth(earth_cords, EARTH_IMAGE)
 earth_hit_box = Earth.hit_box(100, 95)
 
 # init hero
-hero = Hero((500, 500), SPEED, PLAYER_IMAGE)
+hero = Hero((width // 2, height // 4), SPEED, PLAYER_IMAGE)
 
 
 def main():
+    clock = pygame.time.Clock()
+
     # init game
     pygame.init()
     pygame.mouse.set_pos(0, 0)
@@ -23,7 +24,7 @@ def main():
 
     # Enemies appear every 1.5 sec
     if DIFFICULTY != 0:
-        pygame.time.set_timer(ENEMY_APPEAR, 1500)
+        pygame.time.set_timer(ENEMY_APPEAR, SPAWN)
 
     # Enemy's spawn
     enemy_spawn = [
@@ -81,7 +82,8 @@ def main():
         hero.move((x, y))
 
         # gravitation effect
-        hero.gravitation(earth_cords)
+        if DIFFICULTY >= 2:
+            hero.gravitation(earth_cords)
 
         # init hero hit box
         hero_hit_box = hero.hit_box()
@@ -100,7 +102,6 @@ def main():
             if flag:
                 del_list.append(num)
             else:
-
                 i.draw_object(windows)
                 if i.hit_box().colliderect(earth_hit_box):
                     run = False

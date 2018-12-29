@@ -10,6 +10,15 @@ def calculate_angle(x1, y1, centrx, centry):
     return angle
 
 
+def print_text(windows, text, font):
+    text = font.render(text, 1, (255, 255, 255))
+    text_x = width // 2 - text.get_width() // 2
+    text_y = height // 2 - text.get_height() // 2
+    text_y += text_y // 2
+    windows.fill((0, 0, 0))
+    windows.blit(text, (text_x, text_y))
+
+
 # Abstract class of all objects in game
 class GameObject:
     def __init__(self, cords, speed, image):
@@ -78,10 +87,10 @@ class Bullet(NeutralObject):
         return False
 
     def draw_object(self, windows):
-        pygame.draw.circle(windows, (255, 0, 0), (int(self.x), int(self.y)), 3, 0)
+        pygame.draw.circle(windows, (255, 0, 0), (int(self.x), int(self.y)), BULLET_RADIUS, 0)
 
     def hit_box(self):
-        return pygame.Rect(self.x + 10, self.y, 5, 5)
+        return pygame.Rect(self.x + 10, self.y, BULLET_RADIUS * 2, BULLET_RADIUS * 2)
 
 
 # Hero class
