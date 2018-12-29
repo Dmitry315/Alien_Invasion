@@ -1,10 +1,5 @@
-import pygame
+from configuration import *
 import numpy as np
-from ctypes import windll
-
-
-# window size
-size = width, height = windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)
 
 
 # function to calculate angle:
@@ -68,7 +63,7 @@ class Bullet(NeutralObject):
     def __init__(self, cords, mouse_cord):
         self.x = cords[0]
         self.y = cords[1]
-        self.speed = 10
+        self.speed = 12
         angle = 360 - calculate_angle(self.x, self.y, mouse_cord[0], mouse_cord[1])
         self.speed_x = self.speed * np.cos(angle / 180 * np.pi)
         self.speed_y = self.speed * np.sin(angle / 180 * np.pi)
@@ -101,6 +96,16 @@ class Hero(GameObject):
 
     def hit_box(self):
         return super().hit_box(80, 80)
+
+    def gravitation(self, earth):
+        r = np.sqrt(np.power((self.x - earth[0]), 2) + np.power((self.y - earth[1]), 2))
+        grav_speed = 500 / r
+        dir_x, dir_y = earth
+        angle = 360 - calculate_angle(self.x, self.y, dir_x, dir_y)
+        self.x += grav_speed * np.cos(angle / 180 * np.pi)
+        self.y += grav_speed * np.sin(angle / 180 * np.pi)
+        self.x = int(self.x)
+        self.y = int(self.y)
 
 
 class SpaceEnemy(GameObject):
