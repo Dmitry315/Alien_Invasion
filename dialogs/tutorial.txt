@@ -4,4 +4,5 @@ It is equipped with new gun, try it.(mouse button)
 Try to destroy this targets.
 This is Earth. Don't shoot in it. And don't bump into it.
 If you have middle or hard difficulty don't forget about gravitation.(it is on in the tutorial)
+On hard difficulty sometimes you can see meteors. They can kill both you and enemy.
 The end of tutorial press ESC to quit.

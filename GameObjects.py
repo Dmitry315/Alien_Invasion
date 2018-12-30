@@ -1,9 +1,10 @@
 from configuration import *
 import numpy as np
+from random import choice
 
 
 # function to calculate angle:
-# for moving and rotating
+# for moving and rotatingwww
 def calculate_angle(x1, y1, centrx, centry):
     delta_x, delta_y = centrx - x1, centry - y1
     angle = 360 - np.degrees(np.arctan2(delta_y, delta_x))
@@ -46,10 +47,10 @@ class GameObject:
     # return hit boxes of objects
     # for checking collision
     def hit_box(self, sizex, sizey):
-        return pygame.Rect(self.x + 10, self.y, sizex - 10, sizey)
+        return pygame.Rect(self.x + 10, self.y, sizex - 20, sizey)
 
 
-# other rigid objects (Earth, meteorites)
+# other rigid objects (Earth, meteors)
 class NeutralObject(GameObject):
     def __init__(self, cords, speed, image):
         super().__init__(cords, speed, image)
@@ -66,6 +67,16 @@ class Earth(NeutralObject):
     # Earth doesn't move in this game
     def move(self):
         pass
+
+
+# appears with hard difficylty
+class Meteor(NeutralObject):
+    def __init__(self, cords, image):
+        super().__init__(cords, choice([2, 3, 4]), image)
+
+    # direction: from top to bottom
+    def move(self):
+        self.y += self.speed
 
 
 class Bullet(NeutralObject):

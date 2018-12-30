@@ -21,11 +21,12 @@ SPEED = 4 * 90 / FPS
 # load images
 PLAYER_IMAGE = pygame.image.load('images/spaceship.png')
 EARTH_IMAGE = pygame.image.load('images/Earth.png')
-ENEMY_SPACESHIP = pygame.image.load('images/enemy_spaceship.png')
-
+ENEMY_SPACESHIP_IMAGE = pygame.image.load('images/enemy_spaceship.png')
+METEOR_IMAGE = pygame.image.load('images/meteor.png')
 
 # events
-ENEMY_APPEAR = 30
+ENEMY_APPEAR = 29
+METEOR_APPEAR = 31
 
 # enemy speed
 ENEMY_SPEED = 3 if DIFFICULTY == 3 else 2

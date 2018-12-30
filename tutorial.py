@@ -6,6 +6,8 @@ hero = Hero((500, 500), SPEED, PLAYER_IMAGE)
 earth_cords = (width // 2 - 50, height // 2 - 50)
 Earth = Earth(earth_cords, EARTH_IMAGE)
 earth_hit_box = Earth.hit_box(100, 95)
+# init meteor
+meteor = Meteor((width * 3 // 4, -100), METEOR_IMAGE)
 
 
 def tutorial():
@@ -81,9 +83,12 @@ def tutorial():
         if dialog_count == 3 and q:
             q = 0
             enemies.extend([
-                SpaceEnemy((width * 3 // 4, height // 4), 0, ENEMY_SPACESHIP, (hero.x, hero.y)),
-                SpaceEnemy((width * 3 // 4, height * 2 // 4), 0, ENEMY_SPACESHIP, (hero.x, hero.y)),
-                SpaceEnemy((width * 3 // 4, height * 3 // 4), 0, ENEMY_SPACESHIP, (hero.x, hero.y))
+                SpaceEnemy((width * 3 // 4, height // 4), 0,
+                           ENEMY_SPACESHIP_IMAGE, (hero.x, hero.y)),
+                SpaceEnemy((width * 3 // 4, height * 2 // 4), 0,
+                           ENEMY_SPACESHIP_IMAGE, (hero.x, hero.y)),
+                SpaceEnemy((width * 3 // 4, height * 3 // 4), 0,
+                           ENEMY_SPACESHIP_IMAGE, (hero.x, hero.y))
             ])
 
         # init hero hit box
@@ -95,6 +100,7 @@ def tutorial():
             if flag:
                 del_list.append(num)
             else:
+                # check collision
                 if i.hit_box().colliderect(earth_hit_box) and dialog_count >= 4:
                     del_list.append(num)
                 for num1, j in enumerate(enemies):
@@ -109,24 +115,42 @@ def tutorial():
         for i in range(len(del_list2)):
             del enemies[del_list2[i] - i]
 
+        # check collision
         for i in enemies:
             if i.hit_box().colliderect(hero_hit_box):
                 hero.x = 500
                 hero.y = 500
             i.draw_object(windows)
 
+        # init targets
         if not bool(enemies) and dialog_count == 3:
             dialog_count = 4
             hero.x = width // 4
             hero.y = height // 2
             bullets = []
+        # draw Earth
         if dialog_count >= 4:
             Earth.draw_object(windows)
         if hero_hit_box.colliderect(earth_hit_box) and dialog_count >= 4:
             hero.x = width // 4
             hero.y = height // 2
+        # add gravitation
         if dialog_count == 5:
             hero.gravitation(earth_cords)
+        # show meteor
+        if dialog_count == 6:
+            if not q:
+                q = 1
+                enemies.append(SpaceEnemy((width * 3 // 4, height * 2 // 4), 0,
+                               ENEMY_SPACESHIP_IMAGE, (hero.x, hero.y)))
+            meteor.move()
+            meteor.draw_object(windows)
+            for i in enemies:
+                if meteor.hit_box(100, 100).colliderect(i.hit_box()):
+                    enemies = []
+        if meteor.y > height and dialog_count == 6:
+            dialog_count += 1
+
         # hero follow mouse
         hero.draw_object(windows, pygame.mouse.get_pos())
 
