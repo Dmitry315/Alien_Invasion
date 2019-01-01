@@ -1,6 +1,7 @@
 from configuration import *
 import numpy as np
 from random import choice
+from time import sleep
 
 
 # function to calculate angle:

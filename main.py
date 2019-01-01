@@ -13,6 +13,7 @@ hero = Hero((width // 2, height // 4), SPEED, PLAYER_IMAGE)
 def lose(windows, score, font):
     print_text(windows, "You lose, total score: {}".format(score), font)
     pygame.display.update()
+    sleep(2)
     while pygame.event.wait().type != pygame.KEYDOWN:
         pass
 
@@ -184,8 +185,8 @@ def main():
 
         # hero follow mouse
         hero.draw_object(windows, pygame.mouse.get_pos())
-        pygame.display.update()
-
+        if run:
+            pygame.display.update()
     pygame.quit()
 
 
