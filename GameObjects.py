@@ -5,7 +5,7 @@ from time import sleep
 
 
 # function to calculate angle:
-# for moving and rotatingwww
+# for moving and rotating
 def calculate_angle(x1, y1, centrx, centry):
     delta_x, delta_y = centrx - x1, centry - y1
     angle = 360 - np.degrees(np.arctan2(delta_y, delta_x))
@@ -22,33 +22,40 @@ def print_text(windows, text, font):
 
 
 # Abstract class of all objects in game
-class GameObject:
+class GameObject(pygame.sprite.Sprite):
     def __init__(self, cords, speed, image):
-        self.x = cords[0]
-        self.y = cords[1]
+        pygame.sprite.Sprite.__init__(self)
         self.speed = speed
+        self.loaded_image = image
         self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = cords[0]
+        self.rect.y = cords[1]
+        self.mask = pygame.mask.from_surface(self.image)
 
     def draw_object(self, windows, direction):
         dir_x, dir_y = direction
-        angle = calculate_angle(self.x, self.y, dir_x, dir_y) - 90
-        rotated_image = pygame.transform.rotate(self.image, angle)
-        windows.blit(rotated_image, (self.x, self.y))
+        angle = calculate_angle(self.rect.x, self.rect.y, dir_x, dir_y) - 90
+        self.image = pygame.transform.rotate(self.loaded_image, angle)
+        old_cords = self.rect.x, self.rect.y
+        self.rect = self.image.get_rect()
+        windows.blit(self.image, old_cords)
+        self.rect.x, self.rect.y = old_cords
 
     # move object in direction
     # calculates with angle function in main.py
     def move(self, direction):
         dir_x, dir_y = direction
-        angle = 360 - calculate_angle(self.x, self.y, dir_x, dir_y)
-        self.x += self.speed * np.cos(angle / 180 * np.pi)
-        self.y += self.speed * np.sin(angle / 180 * np.pi)
-        self.x = int(self.x)
-        self.y = int(self.y)
+        angle = 360 - calculate_angle(self.rect.x, self.rect.y, dir_x, dir_y)
+        self.rect.x += self.speed * np.cos(angle / 180 * np.pi)
+        self.rect.y += self.speed * np.sin(angle / 180 * np.pi)
+        self.rect.x = int(self.rect.x)
+        self.rect.y = int(self.rect.y)
 
     # return hit boxes of objects
     # for checking collision
     def hit_box(self, sizex, sizey):
-        return pygame.Rect(self.x + 10, self.y, sizex - 20, sizey)
+        return pygame.Rect(self.rect.x + 10, self.rect.y, sizex - 20, sizey)
 
 
 # other rigid objects (Earth, meteors)
@@ -58,7 +65,7 @@ class NeutralObject(GameObject):
 
     # there is no need in rotation
     def draw_object(self, windows):
-        windows.blit(self.image, (self.x, self.y))
+        windows.blit(self.image, (self.rect.x, self.rect.y))
 
 
 class Earth(NeutralObject):
@@ -77,32 +84,37 @@ class Meteor(NeutralObject):
 
     # direction: from top to bottom
     def move(self):
-        self.y += self.speed
+        self.rect.y += self.speed
 
 
-class Bullet(NeutralObject):
+class Bullet(pygame.sprite.Sprite):
     def __init__(self, cords, mouse_cord):
-        self.x = cords[0]
-        self.y = cords[1]
+        pygame.sprite.Sprite.__init__(self)
         self.speed = 12
-        angle = 360 - calculate_angle(self.x, self.y, mouse_cord[0], mouse_cord[1])
+        angle = 360 - calculate_angle(cords[0], cords[1], mouse_cord[0], mouse_cord[1])
         self.speed_x = self.speed * np.cos(angle / 180 * np.pi)
         self.speed_y = self.speed * np.sin(angle / 180 * np.pi)
+        self.image = pygame.Surface((2 * BULLET_RADIUS, 2 * BULLET_RADIUS), pygame.SRCALPHA)
+        self.rect = pygame.Rect(cords[0], cords[1], 2 * BULLET_RADIUS, 2 * BULLET_RADIUS)
+        self.rect.x = cords[0]
+        self.rect.y = cords[1]
+        self.mask = pygame.mask.from_surface(self.image)
 
     def move(self):
-        self.x += self.speed_x
-        self.y += self.speed_y
-        self.x = int(self.x)
-        self.y = int(self.y)
-        if self.x > width or self.y > height or self.x < 0 or self.y < 0:
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
+        self.rect.x = int(self.rect.x)
+        self.rect.y = int(self.rect.y)
+        if self.rect.x > width or self.rect.y > height \
+                or self.rect.x < 0 or self.rect.y < 0:
             return True
         return False
 
     def draw_object(self, windows):
-        pygame.draw.circle(windows, (255, 0, 0), (int(self.x), int(self.y)), BULLET_RADIUS, 0)
+        pygame.draw.circle(windows, (255, 0, 0), (int(self.rect.x), int(self.rect.y)), BULLET_RADIUS, 0)
 
     def hit_box(self):
-        return pygame.Rect(self.x + 10, self.y, BULLET_RADIUS * 2, BULLET_RADIUS * 2)
+        return pygame.Rect(self.rect.x + 10, self.rect.y, BULLET_RADIUS * 2, BULLET_RADIUS * 2)
 
 
 # Hero class
@@ -112,21 +124,22 @@ class Hero(GameObject):
 
     # move hero
     def move(self, xy):
-        self.x += xy[0]
-        self.y += xy[1]
+        self.rect.x += xy[0]
+        self.rect.y += xy[1]
 
     def hit_box(self):
         return super().hit_box(80, 80)
 
     def gravitation(self, earth):
-        r = np.sqrt(np.power((self.x - earth[0]), 2) + np.power((self.y - earth[1]), 2))
+        r = np.sqrt(np.power((self.rect.x - earth[0]), 2)
+                    + np.power((self.rect.y - earth[1]), 2))
         grav_speed = 500 / r
         dir_x, dir_y = earth
-        angle = 360 - calculate_angle(self.x, self.y, dir_x, dir_y)
-        self.x += grav_speed * np.cos(angle / 180 * np.pi)
-        self.y += grav_speed * np.sin(angle / 180 * np.pi)
-        self.x = int(self.x)
-        self.y = int(self.y)
+        angle = 360 - calculate_angle(self.rect.x, self.rect.y, dir_x, dir_y)
+        self.rect.x += grav_speed * np.cos(angle / 180 * np.pi)
+        self.rect.y += grav_speed * np.sin(angle / 180 * np.pi)
+        self.rect.x = int(self.rect.x)
+        self.rect.y = int(self.rect.y)
 
 
 class SpaceEnemy(GameObject):

@@ -1,10 +1,9 @@
 from GameObjects import *
 
-
 # init Earth
 earth_cords = (width // 2 - 50, height // 2 - 50)
-Earth = Earth(earth_cords, EARTH_IMAGE)
-earth_hit_box = Earth.hit_box(100, 95)
+earth = Earth(earth_cords, EARTH_IMAGE)
+earth_hit_box = earth.hit_box(100, 95)
 
 # init hero
 hero = Hero((width // 2, height // 4), SPEED, PLAYER_IMAGE)
@@ -39,15 +38,15 @@ def main():
     if DIFFICULTY != 0:
         pygame.time.set_timer(ENEMY_APPEAR, SPAWN)
 
-    # Meteor appears every 15 sec
+    # Meteor appears every 10 sec
     if DIFFICULTY == 3:
-        pygame.time.set_timer(METEOR_APPEAR, 5000)
+        pygame.time.set_timer(METEOR_APPEAR, 10000)
     meteor = None
     meteor_hit_box = None
     # Enemy's spawn
     enemy_spawn = [
         (0, 0), (width // 2, 0),
-        (width, 0), (width, height//2),
+        (width, 0), (width, height // 2),
         (width, height), (width // 2, height),
         (0, height), (0, height // 2)
         # Spawn map:
@@ -86,7 +85,7 @@ def main():
                                           ENEMY_SPACESHIP_IMAGE, earth_cords))
             # fire button
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                bullets.append(Bullet((hero.x + 40, hero.y + 40),
+                bullets.append(Bullet((hero.rect.x + 40, hero.rect.y + 40),
                                       pygame.mouse.get_pos()))
 
         # get pressed keys
@@ -124,15 +123,15 @@ def main():
             meteor_hit_box = meteor.hit_box(100, 100)
 
         # check collision
-        if hero_hit_box.colliderect(earth_hit_box):
+        if pygame.sprite.collide_mask(hero, earth):
             run = False
             lose(windows, score, font)
         if meteor and run:
-            if hero_hit_box.colliderect(meteor_hit_box):
+            if pygame.sprite.collide_mask(hero, meteor):
                 run = False
                 lose(windows, score, font)
         # depict Earth
-        Earth.draw_object(windows)
+        earth.draw_object(windows)
         del_list = []
         # check collision
         for num, i in enumerate(bullets):
@@ -143,8 +142,10 @@ def main():
             else:
                 i.draw_object(windows)
                 if meteor_hit_box:
+                    # if pygame.sprite.collide_mask(i, meteor):
                     if bull_hit_box.colliderect(meteor_hit_box):
                         del_list.append(num)
+                # elif pygame.sprite.collide_mask(i, earth) and run:
                 elif bull_hit_box.colliderect(earth_hit_box) and run:
                     run = False
                     lose(windows, score, font)
@@ -160,20 +161,21 @@ def main():
             i.draw_object(windows)
             enemy_hit_box = i.hit_box()
             # check collision with hero
-            if enemy_hit_box.colliderect(hero_hit_box) and run:
+            if pygame.sprite.collide_mask(i, hero) and run:
                 run = False
                 lose(windows, score, font)
             # check collision with earth
-            elif enemy_hit_box.colliderect(earth_hit_box) and run:
+            if pygame.sprite.collide_mask(i, earth) and run:
                 run = False
                 lose(windows, score, font)
             # collision with meteor
             elif meteor:
-                if enemy_hit_box.colliderect(meteor_hit_box):
+                if pygame.sprite.collide_mask(i, meteor):
                     del_list.append(num)
             # collision with bullets
             for j in range(len(bullets)):
                 if enemy_hit_box.colliderect(bullets[j].hit_box()):
+                    # if pygame.sprite.collide_mask(i, bullets[j]):
                     del_list.append(num)
                     del_list2.append(j)
                     score += 100 * DIFFICULTY

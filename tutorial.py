@@ -4,8 +4,8 @@ from GameObjects import *
 hero = Hero((500, 500), SPEED, PLAYER_IMAGE)
 # init Earth
 earth_cords = (width // 2 - 50, height // 2 - 50)
-Earth = Earth(earth_cords, EARTH_IMAGE)
-earth_hit_box = Earth.hit_box(100, 95)
+earth = Earth(earth_cords, EARTH_IMAGE)
+earth_hit_box = earth.hit_box(100, 95)
 # init meteor
 meteor = Meteor((width * 3 // 4, -100), METEOR_IMAGE)
 
@@ -46,7 +46,7 @@ def tutorial():
                     dialog_count += 1
             # fire button
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                bullets.append(Bullet((hero.x + 40, hero.y + 40), pygame.mouse.get_pos()))
+                bullets.append(Bullet((hero.rect.x + 40, hero.rect.y + 40), pygame.mouse.get_pos()))
                 if dialog_count == 2:
                     dialog_count = 3
 
@@ -84,11 +84,11 @@ def tutorial():
             q = 0
             enemies.extend([
                 SpaceEnemy((width * 3 // 4, height // 4), 0,
-                           ENEMY_SPACESHIP_IMAGE, (hero.x, hero.y)),
+                           ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y)),
                 SpaceEnemy((width * 3 // 4, height * 2 // 4), 0,
-                           ENEMY_SPACESHIP_IMAGE, (hero.x, hero.y)),
+                           ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y)),
                 SpaceEnemy((width * 3 // 4, height * 3 // 4), 0,
-                           ENEMY_SPACESHIP_IMAGE, (hero.x, hero.y))
+                           ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y))
             ])
 
         # init hero hit box
@@ -117,23 +117,23 @@ def tutorial():
 
         # check collision
         for i in enemies:
-            if i.hit_box().colliderect(hero_hit_box):
-                hero.x = 500
-                hero.y = 500
+            if pygame.sprite.collide_mask(i, hero):
+                hero.rect.x = 500
+                hero.rect.y = 500
             i.draw_object(windows)
 
         # init targets
         if not bool(enemies) and dialog_count == 3:
             dialog_count = 4
-            hero.x = width // 4
-            hero.y = height // 2
+            hero.rect.x = width // 4
+            hero.rect.y = height // 2
             bullets = []
         # draw Earth
         if dialog_count >= 4:
-            Earth.draw_object(windows)
-        if hero_hit_box.colliderect(earth_hit_box) and dialog_count >= 4:
-            hero.x = width // 4
-            hero.y = height // 2
+            earth.draw_object(windows)
+        if pygame.sprite.collide_mask(hero, earth) and dialog_count >= 4:
+            hero.rect.x = width // 4
+            hero.rect.y = height // 2
         # add gravitation
         if dialog_count == 5:
             hero.gravitation(earth_cords)
@@ -142,13 +142,13 @@ def tutorial():
             if not q:
                 q = 1
                 enemies.append(SpaceEnemy((width * 3 // 4, height * 2 // 4), 0,
-                               ENEMY_SPACESHIP_IMAGE, (hero.x, hero.y)))
+                               ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y)))
             meteor.move()
             meteor.draw_object(windows)
             for i in enemies:
-                if meteor.hit_box(100, 100).colliderect(i.hit_box()):
+                if pygame.sprite.collide_mask(meteor, i):
                     enemies = []
-        if meteor.y > height and dialog_count == 6:
+        if meteor.rect.y > height and dialog_count == 6:
             dialog_count += 1
 
         # hero follow mouse
