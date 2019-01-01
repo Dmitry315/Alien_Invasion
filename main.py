@@ -186,8 +186,8 @@ def main():
             del bullets[del_list2[i] - i]
 
         # hero follow mouse
-        hero.draw_object(windows, pygame.mouse.get_pos())
         if run:
+            hero.draw_object(windows, pygame.mouse.get_pos())
             pygame.display.update()
     pygame.quit()
 
