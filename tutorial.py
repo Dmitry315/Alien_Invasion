@@ -5,7 +5,6 @@ hero = Hero((500, 500), SPEED, PLAYER_IMAGE)
 # init Earth
 earth_cords = (width // 2 - 50, height // 2 - 50)
 earth = Earth(earth_cords, EARTH_IMAGE)
-earth_hit_box = earth.hit_box(100, 95)
 # init meteor
 meteor = Meteor((width * 3 // 4, -100), METEOR_IMAGE)
 
@@ -57,6 +56,7 @@ def tutorial():
             run = False
 
         # move hero with WASD
+        # check hero moved in tutorial
         x = 0
         y = 0
         if keys[pygame.K_w]:
@@ -75,11 +75,13 @@ def tutorial():
             dialog_count = 2
             bullets = []
         windows.fill((0, 0, 0))
+
         # print dialogs
         if dialog_count < len(dialogs):
             print_text(windows, dialogs[dialog_count][:-1], font)
         hero.move((x, y))
 
+        # add targets
         if dialog_count == 3 and q:
             q = 0
             enemies.extend([
@@ -91,8 +93,6 @@ def tutorial():
                            ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y))
             ])
 
-        # init hero hit box
-        hero_hit_box = hero.hit_box()
         del_list = []
         del_list2 = []
         for num, i in enumerate(bullets):
@@ -100,11 +100,14 @@ def tutorial():
             if flag:
                 del_list.append(num)
             else:
-                # check collision
-                if i.hit_box().colliderect(earth_hit_box) and dialog_count >= 4:
+                # check collision for bullets
+                if meteor:
+                    if pygame.sprite.collide_mask(i, meteor):
+                        del_list.append(num)
+                if pygame.sprite.collide_mask(i, earth) and dialog_count >= 4:
                     del_list.append(num)
                 for num1, j in enumerate(enemies):
-                    if i.hit_box().colliderect(j.hit_box()):
+                    if pygame.sprite.collide_mask(i, j):
                         del_list.append(num)
                         del_list2.append(num1)
                 i.draw_object(windows)
@@ -115,14 +118,14 @@ def tutorial():
         for i in range(len(del_list2)):
             del enemies[del_list2[i] - i]
 
-        # check collision
+        # check collision for enemies with hero
         for i in enemies:
             if pygame.sprite.collide_mask(i, hero):
                 hero.rect.x = 500
                 hero.rect.y = 500
             i.draw_object(windows)
 
-        # init targets
+        # targets killed
         if not bool(enemies) and dialog_count == 3:
             dialog_count = 4
             hero.rect.x = width // 4
@@ -131,6 +134,7 @@ def tutorial():
         # draw Earth
         if dialog_count >= 4:
             earth.draw_object(windows)
+        # check collision hero and earth
         if pygame.sprite.collide_mask(hero, earth) and dialog_count >= 4:
             hero.rect.x = width // 4
             hero.rect.y = height // 2

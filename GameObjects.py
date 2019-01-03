@@ -94,7 +94,8 @@ class Bullet(pygame.sprite.Sprite):
         angle = 360 - calculate_angle(cords[0], cords[1], mouse_cord[0], mouse_cord[1])
         self.speed_x = self.speed * np.cos(angle / 180 * np.pi)
         self.speed_y = self.speed * np.sin(angle / 180 * np.pi)
-        self.image = pygame.Surface((2 * BULLET_RADIUS, 2 * BULLET_RADIUS), pygame.SRCALPHA)
+        self.image = pygame.Surface((2 * BULLET_RADIUS, 2 * BULLET_RADIUS), pygame.SRCALPHA, 32)
+        pygame.draw.circle(self.image, (255, 0, 0), (BULLET_RADIUS, BULLET_RADIUS), BULLET_RADIUS)
         self.rect = pygame.Rect(cords[0], cords[1], 2 * BULLET_RADIUS, 2 * BULLET_RADIUS)
         self.rect.x = cords[0]
         self.rect.y = cords[1]
@@ -111,7 +112,8 @@ class Bullet(pygame.sprite.Sprite):
         return False
 
     def draw_object(self, windows):
-        pygame.draw.circle(windows, (255, 0, 0), (int(self.rect.x), int(self.rect.y)), BULLET_RADIUS, 0)
+        windows.blit(self.image, (self.rect.x, self.rect.y))
+        # pygame.draw.circle(windows, (255, 0, 0), (int(self.rect.x), int(self.rect.y)), BULLET_RADIUS, 0)
 
     def hit_box(self):
         return pygame.Rect(self.rect.x + 10, self.rect.y, BULLET_RADIUS * 2, BULLET_RADIUS * 2)

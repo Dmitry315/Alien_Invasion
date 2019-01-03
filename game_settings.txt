@@ -1,2 +1,2 @@
 game_speed 60
-difficulty 0
+difficulty 2

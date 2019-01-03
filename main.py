@@ -3,7 +3,6 @@ from GameObjects import *
 # init Earth
 earth_cords = (width // 2 - 50, height // 2 - 50)
 earth = Earth(earth_cords, EARTH_IMAGE)
-earth_hit_box = earth.hit_box(100, 95)
 
 # init hero
 hero = Hero((width // 2, height // 4), SPEED, PLAYER_IMAGE)
@@ -42,7 +41,6 @@ def main():
     if DIFFICULTY == 3:
         pygame.time.set_timer(METEOR_APPEAR, 10000)
     meteor = None
-    meteor_hit_box = None
     # Enemy's spawn
     enemy_spawn = [
         (0, 0), (width // 2, 0),
@@ -114,13 +112,11 @@ def main():
             hero.gravitation(earth_cords)
 
         # init hero hit box
-        hero_hit_box = hero.hit_box()
 
         # meteor
         if meteor:
             meteor.move()
             meteor.draw_object(windows)
-            meteor_hit_box = meteor.hit_box(100, 100)
 
         # check collision
         if pygame.sprite.collide_mask(hero, earth):
@@ -136,17 +132,16 @@ def main():
         # check collision
         for num, i in enumerate(bullets):
             flag = i.move()
-            bull_hit_box = i.hit_box()
             if flag:
                 del_list.append(num)
             else:
                 i.draw_object(windows)
-                if meteor_hit_box:
-                    # if pygame.sprite.collide_mask(i, meteor):
-                    if bull_hit_box.colliderect(meteor_hit_box):
+                if meteor:
+                    if pygame.sprite.collide_mask(i, meteor):
+                        # if bull_hit_box.colliderect(meteor_hit_box):
                         del_list.append(num)
-                # elif pygame.sprite.collide_mask(i, earth) and run:
-                elif bull_hit_box.colliderect(earth_hit_box) and run:
+                elif pygame.sprite.collide_mask(i, earth) and run:
+                    # elif bull_hit_box.colliderect(earth_hit_box) and run:
                     run = False
                     lose(windows, score, font)
                     pygame.quit()
@@ -159,7 +154,6 @@ def main():
         for num, i in enumerate(enemies):
             i.move()
             i.draw_object(windows)
-            enemy_hit_box = i.hit_box()
             # check collision with hero
             if pygame.sprite.collide_mask(i, hero) and run:
                 run = False
@@ -174,8 +168,8 @@ def main():
                     del_list.append(num)
             # collision with bullets
             for j in range(len(bullets)):
-                if enemy_hit_box.colliderect(bullets[j].hit_box()):
-                    # if pygame.sprite.collide_mask(i, bullets[j]):
+                # if enemy_hit_box.colliderect(bullets[j].hit_box()):
+                if pygame.sprite.collide_mask(i, bullets[j]):
                     del_list.append(num)
                     del_list2.append(j)
                     score += 100 * DIFFICULTY
