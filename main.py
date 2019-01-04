@@ -1,12 +1,5 @@
 from GameObjects import *
 
-# init Earth
-earth_cords = (width // 2 - 50, height // 2 - 50)
-earth = Earth(earth_cords, EARTH_IMAGE)
-
-# init hero
-hero = Hero((width // 2, height // 4), SPEED, PLAYER_IMAGE)
-
 
 def lose(windows, score, font):
     print_text(windows, "You lose, total score: {}".format(score), font)
@@ -17,6 +10,36 @@ def lose(windows, score, font):
 
 
 def main():
+    ################################################################
+    global enemy_speed, bullet_radius, spawn, speed, difficulty, fps
+    with open('game_settings.txt', encoding='utf-8', mode='r') as f:
+        lines = f.readlines()
+        fps = int(lines[0].split()[1])
+        diff = int(lines[1].split()[1])
+        if diff > 3:
+            difficulty = 3
+        elif diff < 0:
+            difficulty = 0
+        else:
+            difficulty = diff
+
+    # enemy speed
+    enemy_speed = 3 if difficulty == 3 else 2
+
+    # enemy spawn rate
+    # if DIFFICULTY == 0 enemies won't spawn
+    if difficulty != 0:
+        spawn = 2000 - difficulty * 300
+    else:
+        spawn = 0
+    ################################################################
+    # init Earth
+    earth_cords = (width // 2 - 50, height // 2 - 50)
+    earth = Earth(earth_cords, EARTH_IMAGE)
+
+    # init hero
+    hero = Hero((width // 2, height // 4), speed, PLAYER_IMAGE)
+
     clock = pygame.time.Clock()
 
     # init game
@@ -34,11 +57,11 @@ def main():
     windows.fill((0, 0, 0))
 
     # Enemies appear every 1.5 sec
-    if DIFFICULTY != 0:
-        pygame.time.set_timer(ENEMY_APPEAR, SPAWN)
+    if difficulty != 0:
+        pygame.time.set_timer(ENEMY_APPEAR, spawn)
 
     # Meteor appears every 10 sec
-    if DIFFICULTY == 3:
+    if difficulty == 3:
         pygame.time.set_timer(METEOR_APPEAR, 10000)
     meteor = None
     # Enemy's spawn
@@ -71,7 +94,7 @@ def main():
 
     # first level cycle
     while run:
-        clock.tick(FPS)
+        clock.tick(fps)
 
         # check events
         for event in pygame.event.get():
@@ -79,7 +102,7 @@ def main():
                 meteor = Meteor((choice(meteor_spawn), -100), METEOR_IMAGE)
             elif event.type == ENEMY_APPEAR:
                 cords = choice(enemy_spawn)
-                enemies.append(SpaceEnemy(cords, ENEMY_SPEED,
+                enemies.append(SpaceEnemy(cords, enemy_speed,
                                           ENEMY_SPACESHIP_IMAGE, earth_cords))
             # fire button
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -96,19 +119,19 @@ def main():
         x = 0
         y = 0
         if keys[pygame.K_w]:
-            y -= SPEED
+            y -= speed
         if keys[pygame.K_a]:
-            x -= SPEED
+            x -= speed
         if keys[pygame.K_s]:
-            y += SPEED
+            y += speed
         if keys[pygame.K_d]:
-            x += SPEED
+            x += speed
         windows.fill((0, 0, 0))
         print_text(windows, "score: {}".format(score), font)
         hero.move((x, y))
 
         # gravitation effect
-        if DIFFICULTY >= 2:
+        if difficulty >= 2:
             hero.gravitation(earth_cords)
 
         # init hero hit box
@@ -172,7 +195,7 @@ def main():
                 if pygame.sprite.collide_mask(i, bullets[j]):
                     del_list.append(num)
                     del_list2.append(j)
-                    score += 100 * DIFFICULTY
+                    score += 100 * difficulty
         # delete collided enemies and bullets
         for i in range(len(del_list)):
             del enemies[del_list[i] - i]

@@ -1,15 +1,18 @@
 from GameObjects import *
 
-# init hero
-hero = Hero((500, 500), SPEED, PLAYER_IMAGE)
-# init Earth
-earth_cords = (width // 2 - 50, height // 2 - 50)
-earth = Earth(earth_cords, EARTH_IMAGE)
-# init meteor
-meteor = Meteor((width * 3 // 4, -100), METEOR_IMAGE)
-
 
 def tutorial():
+
+    # init hero
+    hero = Hero((500, 500), speed, PLAYER_IMAGE)
+
+    # init Earth
+    earth_cords = (width // 2 - 50, height // 2 - 50)
+    earth = Earth(earth_cords, EARTH_IMAGE)
+
+    # init meteor
+    meteor = Meteor((width * 3 // 4, -100), METEOR_IMAGE)
+
     # load dialogs:
     with open('dialogs/tutorial.txt', encoding='utf-8', mode='r') as file:
         dialogs = file.readlines()
@@ -35,7 +38,7 @@ def tutorial():
     bullets = []
     run = True
     while run:
-        clock.tick(FPS)
+        clock.tick(fps)
         # check events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -60,16 +63,16 @@ def tutorial():
         x = 0
         y = 0
         if keys[pygame.K_w]:
-            y -= SPEED
+            y -= speed
             w = 1 if dialog_count == 1 else 0
         if keys[pygame.K_a]:
-            x -= SPEED
+            x -= speed
             a = 1 if dialog_count == 1 else 0
         if keys[pygame.K_s]:
-            y += SPEED
+            y += speed
             s = 1 if dialog_count == 1 else 0
         if keys[pygame.K_d]:
-            x += SPEED
+            x += speed
             d = 1 if dialog_count == 1 else 0
         if w and a and s and d and dialog_count == 1:
             dialog_count = 2
@@ -159,6 +162,7 @@ def tutorial():
         hero.draw_object(windows, pygame.mouse.get_pos())
 
         pygame.display.update()
+    pygame.quit()
 
 
 if __name__ == '__main__':

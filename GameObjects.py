@@ -23,9 +23,9 @@ def print_text(windows, text, font):
 
 # Abstract class of all objects in game
 class GameObject(pygame.sprite.Sprite):
-    def __init__(self, cords, speed, image):
+    def __init__(self, cords, speed1, image):
         pygame.sprite.Sprite.__init__(self)
-        self.speed = speed
+        self.speed = speed1
         self.loaded_image = image
         self.image = image
         self.rect = self.image.get_rect()
@@ -52,16 +52,11 @@ class GameObject(pygame.sprite.Sprite):
         self.rect.x = int(self.rect.x)
         self.rect.y = int(self.rect.y)
 
-    # return hit boxes of objects
-    # for checking collision
-    def hit_box(self, sizex, sizey):
-        return pygame.Rect(self.rect.x + 10, self.rect.y, sizex - 20, sizey)
-
 
 # other rigid objects (Earth, meteors)
 class NeutralObject(GameObject):
-    def __init__(self, cords, speed, image):
-        super().__init__(cords, speed, image)
+    def __init__(self, cords, speed1, image):
+        super().__init__(cords, speed1, image)
 
     # there is no need in rotation
     def draw_object(self, windows):
@@ -94,9 +89,9 @@ class Bullet(pygame.sprite.Sprite):
         angle = 360 - calculate_angle(cords[0], cords[1], mouse_cord[0], mouse_cord[1])
         self.speed_x = self.speed * np.cos(angle / 180 * np.pi)
         self.speed_y = self.speed * np.sin(angle / 180 * np.pi)
-        self.image = pygame.Surface((2 * BULLET_RADIUS, 2 * BULLET_RADIUS), pygame.SRCALPHA, 32)
-        pygame.draw.circle(self.image, (255, 0, 0), (BULLET_RADIUS, BULLET_RADIUS), BULLET_RADIUS)
-        self.rect = pygame.Rect(cords[0], cords[1], 2 * BULLET_RADIUS, 2 * BULLET_RADIUS)
+        self.image = pygame.Surface((2 * bullet_radius, 2 * bullet_radius), pygame.SRCALPHA, 32)
+        pygame.draw.circle(self.image, (255, 0, 0), (bullet_radius, bullet_radius), bullet_radius)
+        self.rect = pygame.Rect(cords[0], cords[1], 2 * bullet_radius, 2 * bullet_radius)
         self.rect.x = cords[0]
         self.rect.y = cords[1]
         self.mask = pygame.mask.from_surface(self.image)
@@ -113,24 +108,17 @@ class Bullet(pygame.sprite.Sprite):
 
     def draw_object(self, windows):
         windows.blit(self.image, (self.rect.x, self.rect.y))
-        # pygame.draw.circle(windows, (255, 0, 0), (int(self.rect.x), int(self.rect.y)), BULLET_RADIUS, 0)
-
-    def hit_box(self):
-        return pygame.Rect(self.rect.x + 10, self.rect.y, BULLET_RADIUS * 2, BULLET_RADIUS * 2)
 
 
 # Hero class
 class Hero(GameObject):
-    def __init__(self, cords, speed, image):
-        super().__init__(cords, speed, image)
+    def __init__(self, cords, speed1, image):
+        super().__init__(cords, speed1, image)
 
     # move hero
     def move(self, xy):
         self.rect.x += xy[0]
         self.rect.y += xy[1]
-
-    def hit_box(self):
-        return super().hit_box(80, 80)
 
     def gravitation(self, earth):
         r = np.sqrt(np.power((self.rect.x - earth[0]), 2)
@@ -145,8 +133,8 @@ class Hero(GameObject):
 
 
 class SpaceEnemy(GameObject):
-    def __init__(self, cords, speed, image, direction):
-        super().__init__(cords, speed, image)
+    def __init__(self, cords, speed1, image, direction):
+        super().__init__(cords, speed1, image)
         # it is better to give enemies direction in init
         self.direction = direction
 
@@ -157,6 +145,3 @@ class SpaceEnemy(GameObject):
 
     def draw_object(self, windows):
         super().draw_object(windows, self.direction)
-
-    def hit_box(self):
-        return super().hit_box(55, 41)
