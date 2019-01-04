@@ -163,7 +163,7 @@ def main():
                     if pygame.sprite.collide_mask(i, meteor):
                         # if bull_hit_box.colliderect(meteor_hit_box):
                         del_list.append(num)
-                elif pygame.sprite.collide_mask(i, earth) and run:
+                if pygame.sprite.collide_mask(i, earth) and run:
                     # elif bull_hit_box.colliderect(earth_hit_box) and run:
                     run = False
                     lose(windows, score, font)
