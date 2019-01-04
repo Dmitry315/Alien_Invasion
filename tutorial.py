@@ -4,7 +4,7 @@ from GameObjects import *
 def tutorial():
 
     # init hero
-    hero = Hero((500, 500), speed, PLAYER_IMAGE)
+    hero = Hero((width // 6, height // 2), speed, PLAYER_IMAGE)
 
     # init Earth
     earth_cords = (width // 2 - 50, height // 2 - 50)

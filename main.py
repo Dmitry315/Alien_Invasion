@@ -4,7 +4,7 @@ from GameObjects import *
 def lose(windows, score, font):
     print_text(windows, "You lose, total score: {}".format(score), font)
     pygame.display.update()
-    sleep(2)
+    sleep(1)
     while pygame.event.wait().type != pygame.KEYDOWN:
         pass
 
@@ -34,11 +34,11 @@ def main():
         spawn = 0
     ################################################################
     # init Earth
-    earth_cords = (width // 2 - 50, height // 2 - 50)
+    earth_cords = (width // 2 - 45, height // 2 - 50)
     earth = Earth(earth_cords, EARTH_IMAGE)
 
     # init hero
-    hero = Hero((width // 2, height // 4), speed, PLAYER_IMAGE)
+    hero = Hero((width // 5, height // 2), speed, PLAYER_IMAGE)
 
     clock = pygame.time.Clock()
 
@@ -103,7 +103,7 @@ def main():
             elif event.type == ENEMY_APPEAR:
                 cords = choice(enemy_spawn)
                 enemies.append(SpaceEnemy(cords, enemy_speed,
-                                          ENEMY_SPACESHIP_IMAGE, earth_cords))
+                                          ENEMY_SPACESHIP_IMAGE, (width // 2, height // 2)))
             # fire button
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 bullets.append(Bullet((hero.rect.x + 40, hero.rect.y + 40),
@@ -132,7 +132,7 @@ def main():
 
         # gravitation effect
         if difficulty >= 2:
-            hero.gravitation(earth_cords)
+            hero.gravitation((width // 2, height // 2))
 
         # init hero hit box
 
@@ -143,12 +143,12 @@ def main():
 
         # check collision
         if pygame.sprite.collide_mask(hero, earth):
-            run = False
             lose(windows, score, font)
+            break
         if meteor and run:
             if pygame.sprite.collide_mask(hero, meteor):
-                run = False
                 lose(windows, score, font)
+                break
         # depict Earth
         earth.draw_object(windows)
         del_list = []
@@ -161,13 +161,10 @@ def main():
                 i.draw_object(windows)
                 if meteor:
                     if pygame.sprite.collide_mask(i, meteor):
-                        # if bull_hit_box.colliderect(meteor_hit_box):
                         del_list.append(num)
                 if pygame.sprite.collide_mask(i, earth) and run:
-                    # elif bull_hit_box.colliderect(earth_hit_box) and run:
                     run = False
                     lose(windows, score, font)
-                    pygame.quit()
         # delete bullets out from game
         for i in range(len(del_list)):
             del bullets[del_list[i] - i]
@@ -191,7 +188,6 @@ def main():
                     del_list.append(num)
             # collision with bullets
             for j in range(len(bullets)):
-                # if enemy_hit_box.colliderect(bullets[j].hit_box()):
                 if pygame.sprite.collide_mask(i, bullets[j]):
                     del_list.append(num)
                     del_list2.append(j)

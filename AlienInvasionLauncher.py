@@ -23,20 +23,23 @@ class Window(QMainWindow):
         self.img.resize(self.img.sizeHint())
 
     def btn_pressed(self):
-        x = self.sender().text()
-        if x == 'Играть':
-            self.hide()
-            main()
-            sleep(0.5)
-            self.show()
-        elif x == 'Обучение':
-            self.hide()
-            tutorial()
-            sleep(0.5)
-            self.show()
-        elif x == 'Настройки' and not Window.is_settings:
-            Settings.show_widget()
-            Window.is_settings = 0
+        try:
+            x = self.sender().text()
+            if x == 'Играть':
+                self.hide()
+                main()
+                sleep(0.5)
+                self.show()
+            elif x == 'Обучение':
+                self.hide()
+                tutorial()
+                sleep(0.5)
+                self.show()
+            elif x == 'Настройки' and not Window.is_settings:
+                Settings.show_widget()
+                Window.is_settings = 0
+        except Exception as err:
+            print(err)
 
 
 class Settings(QDialog):
