@@ -86,10 +86,10 @@ def main():
     #  |     E     |
     #  |           |
     #  \ - - - - - /
-    # init list of enemies and bullets
+    # init sprite groups of enemies and bullets
     # to check collision
-    enemies = []
-    bullets = []
+    enemies_sprites = pygame.sprite.Group()
+    bullets_sprites = pygame.sprite.Group()
     run = True
 
     # first level cycle
@@ -102,12 +102,15 @@ def main():
                 meteor = Meteor((choice(meteor_spawn), -100), METEOR_IMAGE)
             elif event.type == ENEMY_APPEAR:
                 cords = choice(enemy_spawn)
-                enemies.append(SpaceEnemy(cords, enemy_speed,
-                                          ENEMY_SPACESHIP_IMAGE, (width // 2, height // 2)))
+                enemy = SpaceEnemy(cords, enemy_speed,
+                                   ENEMY_SPACESHIP_IMAGE, (width // 2, height // 2))
+                enemies_sprites.add(enemy)
+
             # fire button
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                bullets.append(Bullet((hero.rect.x + 40, hero.rect.y + 40),
-                                      pygame.mouse.get_pos()))
+                bullet = Bullet((hero.rect.x + 40, hero.rect.y + 40),
+                                pygame.mouse.get_pos())
+                bullets_sprites.add(bullet)
 
         # get pressed keys
         keys = pygame.key.get_pressed()
@@ -153,26 +156,28 @@ def main():
         earth.draw_object(windows)
         del_list = []
         # check collision
-        for num, i in enumerate(bullets):
+        for i in bullets_sprites:
             flag = i.move()
             if flag:
-                del_list.append(num)
+                del_list.append(i)
             else:
-                i.draw_object(windows)
                 if meteor:
                     if pygame.sprite.collide_mask(i, meteor):
-                        del_list.append(num)
+                        del_list.append(i)
                 if pygame.sprite.collide_mask(i, earth) and run:
                     run = False
                     lose(windows, score, font)
         # delete bullets out from game
-        for i in range(len(del_list)):
-            del bullets[del_list[i] - i]
+        for i in del_list:
+            bullets_sprites.remove(i)
+        # draw bullets
+        bullets_sprites.draw(windows)
 
         del_list = []
-        del_list2 = []
-        for num, i in enumerate(enemies):
+        for i in enemies_sprites:
             i.move()
+            # can't use enemies_sprites.draw(windows)
+            # because it draws without rotation
             i.draw_object(windows)
             # check collision with hero
             if pygame.sprite.collide_mask(i, hero) and run:
@@ -185,21 +190,20 @@ def main():
             # collision with meteor
             elif meteor:
                 if pygame.sprite.collide_mask(i, meteor):
-                    del_list.append(num)
+                    del_list.append(i)
             # collision with bullets
-            for j in range(len(bullets)):
-                if pygame.sprite.collide_mask(i, bullets[j]):
-                    del_list.append(num)
-                    del_list2.append(j)
-                    score += 100 * difficulty
-        # delete collided enemies and bullets
-        for i in range(len(del_list)):
-            del enemies[del_list[i] - i]
-        for i in range(len(del_list2)):
-            del bullets[del_list2[i] - i]
+            bull = pygame.sprite.spritecollideany(i, bullets_sprites)
+            if bull:
+                bullets_sprites.remove(bull)
+                del_list.append(i)
+                score += 100 * difficulty
+        # delete collided enemies
+        for i in del_list:
+            enemies_sprites.remove(i)
+            # del enemies[del_list[i] - i]
 
-        # hero follow mouse
         if run:
+            # hero follow mouse
             hero.draw_object(windows, pygame.mouse.get_pos())
             pygame.display.update()
     pygame.quit()

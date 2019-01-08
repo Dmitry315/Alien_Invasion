@@ -2,7 +2,6 @@ from GameObjects import *
 
 
 def tutorial():
-
     # init hero
     hero = Hero((width // 6, height // 2), speed, PLAYER_IMAGE)
 
@@ -34,8 +33,8 @@ def tutorial():
     windows.fill((0, 0, 0))
     # init list of enemies and bullets
     # to check collision
-    enemies = []
-    bullets = []
+    enemies_sprites = pygame.sprite.Group()
+    bullets_sprites = pygame.sprite.Group()
     run = True
     while run:
         clock.tick(fps)
@@ -48,7 +47,8 @@ def tutorial():
                     dialog_count += 1
             # fire button
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                bullets.append(Bullet((hero.rect.x + 40, hero.rect.y + 40), pygame.mouse.get_pos()))
+                bullets_sprites.add(Bullet((hero.rect.x + 40, hero.rect.y + 40),
+                                           pygame.mouse.get_pos()))
                 if dialog_count == 2:
                     dialog_count = 3
 
@@ -76,7 +76,7 @@ def tutorial():
             d = 1 if dialog_count == 1 else 0
         if w and a and s and d and dialog_count == 1:
             dialog_count = 2
-            bullets = []
+            bullets_sprites = pygame.sprite.Group()
         windows.fill((0, 0, 0))
 
         # print dialogs
@@ -87,53 +87,49 @@ def tutorial():
         # add targets
         if dialog_count == 3 and q:
             q = 0
-            enemies.extend([
-                SpaceEnemy((width * 3 // 4, height // 4), 0,
-                           ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y)),
-                SpaceEnemy((width * 3 // 4, height * 2 // 4), 0,
-                           ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y)),
-                SpaceEnemy((width * 3 // 4, height * 3 // 4), 0,
-                           ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y))
-            ])
+            enemies_sprites.add(SpaceEnemy((width * 3 // 4, height // 4), 0,
+                                           ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y)))
+            enemies_sprites.add(SpaceEnemy((width * 3 // 4, height * 2 // 4), 0,
+                                           ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y)))
+            enemies_sprites.add(SpaceEnemy((width * 3 // 4, height * 3 // 4), 0,
+                                           ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y)))
 
         del_list = []
-        del_list2 = []
-        for num, i in enumerate(bullets):
+        # del_list2 = []
+        for i in bullets_sprites:
             flag = i.move()
             if flag:
-                del_list.append(num)
+                del_list.append(i)
             else:
                 # check collision for bullets
                 if meteor:
                     if pygame.sprite.collide_mask(i, meteor):
-                        del_list.append(num)
+                        del_list.append(i)
                 if pygame.sprite.collide_mask(i, earth) and dialog_count >= 4:
-                    del_list.append(num)
-                for num1, j in enumerate(enemies):
-                    if pygame.sprite.collide_mask(i, j):
-                        del_list.append(num)
-                        del_list2.append(num1)
-                i.draw_object(windows)
-
+                    del_list.append(i)
+                # collision with bullets
+                enemy = pygame.sprite.spritecollideany(i, enemies_sprites)
+                if enemy:
+                    enemies_sprites.remove(enemy)
+                    del_list.append(i)
         # delete collided enemies and bullets
-        for i in range(len(del_list)):
-            del bullets[del_list[i] - i]
-        for i in range(len(del_list2)):
-            del enemies[del_list2[i] - i]
+        for i in del_list:
+            bullets_sprites.remove(i)
+        bullets_sprites.draw(windows)
 
         # check collision for enemies with hero
-        for i in enemies:
+        for i in enemies_sprites:
             if pygame.sprite.collide_mask(i, hero):
-                hero.rect.x = 500
-                hero.rect.y = 500
+                hero.rect.x = width // 4
+                hero.rect.y = height // 2
             i.draw_object(windows)
 
         # targets killed
-        if not bool(enemies) and dialog_count == 3:
+        if not bool(enemies_sprites) and dialog_count == 3:
             dialog_count = 4
             hero.rect.x = width // 4
             hero.rect.y = height // 2
-            bullets = []
+            bullets_sprites = pygame.sprite.Group()
         # draw Earth
         if dialog_count >= 4:
             earth.draw_object(windows)
@@ -143,18 +139,25 @@ def tutorial():
             hero.rect.y = height // 2
         # add gravitation
         if dialog_count == 5:
+            if not q:
+                hero.rect.x = width // 4
+                hero.rect.y = height // 2
+                q = 1
             hero.gravitation(earth_cords)
         # show meteor
         if dialog_count == 6:
-            if not q:
-                q = 1
-                enemies.append(SpaceEnemy((width * 3 // 4, height * 2 // 4), 0,
-                               ENEMY_SPACESHIP_IMAGE, (hero.rect.x, hero.rect.y)))
+            if q:
+                q = 0
+                enemies_sprites.add(SpaceEnemy((width * 3 // 4, height * 2 // 4), 0,
+                                               ENEMY_SPACESHIP_IMAGE,
+                                               (hero.rect.x, hero.rect.y)))
             meteor.move()
             meteor.draw_object(windows)
-            for i in enemies:
-                if pygame.sprite.collide_mask(meteor, i):
-                    enemies = []
+            if pygame.sprite.spritecollideany(meteor, enemies_sprites):
+                enemies_sprites = pygame.sprite.Group()
+            if pygame.sprite.collide_mask(meteor, hero):
+                hero.rect.x = width // 4
+                hero.rect.y = height // 2
         if meteor.rect.y > height and dialog_count == 6:
             dialog_count += 1
 
