@@ -114,6 +114,7 @@ class Bullet(pygame.sprite.Sprite):
 class Hero(GameObject):
     def __init__(self, cords, speed1, image):
         super().__init__(cords, speed1, image)
+        self.cords = cords
 
     # move hero
     def move(self, xy):
@@ -123,13 +124,11 @@ class Hero(GameObject):
     def gravitation(self, earth):
         r = np.sqrt(np.power((self.rect.x - earth[0]), 2)
                     + np.power((self.rect.y - earth[1]), 2))
-        grav_speed = 500 / r
+        grav_speed = 500 / r + 0.75
         dir_x, dir_y = earth
         angle = 360 - calculate_angle(self.rect.x, self.rect.y, dir_x, dir_y)
         self.rect.x += grav_speed * np.cos(angle / 180 * np.pi)
         self.rect.y += grav_speed * np.sin(angle / 180 * np.pi)
-        self.rect.x = int(self.rect.x)
-        self.rect.y = int(self.rect.y)
 
 
 class SpaceEnemy(GameObject):

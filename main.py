@@ -134,7 +134,7 @@ def main():
         hero.move((x, y))
 
         # gravitation effect
-        if difficulty >= 2:
+        if difficulty >= 2 or not difficulty:
             hero.gravitation((width // 2, height // 2))
 
         # init hero hit box
