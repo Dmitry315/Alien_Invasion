@@ -13,9 +13,14 @@ def lose(windows, score, font):
 
 def destruction(cords):
     global particles
-    numbers = range(-5, 6)
-    for _ in range(20):
-        Particle(particles, cords, choice(numbers), choice(numbers))
+    numbers = range(-6, 6)
+    for _ in range(100):
+        dx = choice(numbers)
+        dy = choice(numbers)
+        while not(dx and dy):
+            dx = choice(numbers)
+            dy = choice(numbers)
+        Particle(particles, cords, dx, dy)
 
 
 def main():
