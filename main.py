@@ -1,5 +1,7 @@
 from GameObjects import *
 
+particles = pygame.sprite.Group()
+
 
 def lose(windows, score, font):
     print_text(windows, "You lose, total score: {}".format(score), font)
@@ -9,9 +11,16 @@ def lose(windows, score, font):
         pass
 
 
+def destruction(cords):
+    global particles
+    numbers = range(-5, 6)
+    for _ in range(20):
+        Particle(particles, cords, choice(numbers), choice(numbers))
+
+
 def main():
     ################################################################
-    global enemy_speed, bullet_radius, spawn, speed, difficulty, fps
+    global enemy_speed, bullet_radius, spawn, speed, difficulty, fps, particles
     with open('game_settings.txt', encoding='utf-8', mode='r') as f:
         lines = f.readlines()
         fps = int(lines[0].split()[1])
@@ -199,12 +208,17 @@ def main():
                 score += 100 * difficulty
         # delete collided enemies
         for i in del_list:
+            try:
+                destruction((i.rect.x + 20, i.rect.y + 20))
+            except Exception as err:
+                print(err)
+                run = False
             enemies_sprites.remove(i)
-            # del enemies[del_list[i] - i]
-
         if run:
             # hero follow mouse
             hero.draw_object(windows, pygame.mouse.get_pos())
+            particles.update()
+            particles.draw(windows)
             pygame.display.update()
     pygame.quit()
 

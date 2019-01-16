@@ -144,3 +144,26 @@ class SpaceEnemy(GameObject):
 
     def draw_object(self, windows):
         super().draw_object(windows, self.direction)
+
+
+class Particle(pygame.sprite.Sprite):
+    colors = [(255, 0, 0), (255, 255, 0), (255, 165, 0)]
+
+    def __init__(self, group, cords, dx, dy):
+        pygame.sprite.Sprite.__init__(group)
+        self.image = pygame.Surface((2, 2), pygame.SRCALPHA, 32)
+        pygame.draw.rect(self.image, choice(Particle.colors), (0, 0, 2, 2), 1)
+        self.rect = self.image.get_rect()
+        self.rect.x = cords[0]
+        self.rect.y = cords[1]
+        self.velocity = [dx, dy]
+        self.start_point = cords
+
+    def update(self):
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+        r = np.sqrt(np.power((self.rect.x - self.start_point[0]), 2)
+                    + np.power((self.rect.y - self.start_point[1]), 2))
+        if r > 40:
+            self.kill()
+
