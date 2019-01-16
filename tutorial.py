@@ -1,5 +1,19 @@
 from GameObjects import *
 
+particles = pygame.sprite.Group()
+
+
+def destruction(cords):
+    global particles
+    numbers = range(-6, 6)
+    for _ in range(100):
+        dx = choice(numbers)
+        dy = choice(numbers)
+        while not(dx and dy):
+            dx = choice(numbers)
+            dy = choice(numbers)
+        Particle(particles, cords, dx, dy)
+
 
 def tutorial():
     # init hero
@@ -110,6 +124,7 @@ def tutorial():
                 # collision with bullets
                 enemy = pygame.sprite.spritecollideany(i, enemies_sprites)
                 if enemy:
+                    destruction((enemy.rect.x + 20, enemy.rect.y + 20))
                     enemies_sprites.remove(enemy)
                     del_list.append(i)
         # delete collided enemies and bullets
@@ -153,7 +168,9 @@ def tutorial():
                                                (hero.rect.x, hero.rect.y)))
             meteor.move()
             meteor.draw_object(windows)
-            if pygame.sprite.spritecollideany(meteor, enemies_sprites):
+            enemy = pygame.sprite.spritecollideany(meteor, enemies_sprites)
+            if enemy:
+                destruction((enemy.rect.x + 20, enemy.rect.y + 20))
                 enemies_sprites = pygame.sprite.Group()
             if pygame.sprite.collide_mask(meteor, hero):
                 hero.rect.x = width // 4
@@ -163,7 +180,8 @@ def tutorial():
 
         # hero follow mouse
         hero.draw_object(windows, pygame.mouse.get_pos())
-
+        particles.update()
+        particles.draw(windows)
         pygame.display.update()
     pygame.quit()
 

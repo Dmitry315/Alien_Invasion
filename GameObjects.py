@@ -124,7 +124,7 @@ class Hero(GameObject):
     def gravitation(self, earth):
         r = np.sqrt(np.power((self.rect.x - earth[0]), 2)
                     + np.power((self.rect.y - earth[1]), 2))
-        grav_speed = 500 / r + 0.75
+        grav_speed = 500 / r + 0.5
         dir_x, dir_y = earth
         angle = 360 - calculate_angle(self.rect.x, self.rect.y, dir_x, dir_y)
         self.rect.x += grav_speed * np.cos(angle / 180 * np.pi)

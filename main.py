@@ -38,7 +38,7 @@ def main():
             difficulty = diff
 
     # enemy speed
-    enemy_speed = 3 if difficulty == 3 else 2
+    enemy_speed = 2.5 if difficulty == 3 else 2
 
     # enemy spawn rate
     # if DIFFICULTY == 0 enemies won't spawn
@@ -213,11 +213,7 @@ def main():
                 score += 100 * difficulty
         # delete collided enemies
         for i in del_list:
-            try:
-                destruction((i.rect.x + 20, i.rect.y + 20))
-            except Exception as err:
-                print(err)
-                run = False
+            destruction((i.rect.x + 20, i.rect.y + 20))
             enemies_sprites.remove(i)
         if run:
             # hero follow mouse
