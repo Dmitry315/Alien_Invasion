@@ -3,7 +3,6 @@ from tutorial import *
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
-from PyQt5 import QtCore
 from sys import argv, exit
 
 
@@ -18,6 +17,8 @@ class Window(QMainWindow):
         self.play.clicked.connect(self.btn_pressed)
         self.tutorial.clicked.connect(self.btn_pressed)
         self.settings.clicked.connect(self.btn_pressed)
+        self.leader_board.clicked.connect(self.btn_pressed)
+        self.exit_game.clicked.connect(exit)
         self.pixmap = QPixmap('images/main_menu.png')
         self.img.setPixmap(self.pixmap)
         self.img.resize(self.img.sizeHint())
@@ -37,6 +38,11 @@ class Window(QMainWindow):
         elif x == 'Настройки' and not Window.is_settings:
             Settings.show_widget()
             Window.is_settings = 0
+        elif x == 'Таблица рекордов':
+            try:
+                LeaderBoard.show_widget()
+            except Exception as err:
+                print(err)
 
 
 class Settings(QDialog):
@@ -65,9 +71,31 @@ class Settings(QDialog):
         cls.widget.show()
 
 
+class LeaderBoard(QDialog):
+    widget = None
+
+    def __init__(self):
+        LeaderBoard.widget = self
+        super().__init__()
+        uic.loadUi('leader_board.ui', self)
+
+    def update_board(self):
+        with open('score.txt', mode='r', encoding='utf-8') as f:
+            lines = f.readlines()
+        self.easy.setText(lines[0][:-1])
+        self.medium.setText(lines[1][:-1])
+        self.hard.setText(lines[2][:-1])
+
+    @classmethod
+    def show_widget(cls):
+        cls.widget.update_board()
+        cls.widget.show()
+
+
 if __name__ == '__main__':
     app = QApplication(argv)
     win = Window()
     settings = Settings()
+    leader_board = LeaderBoard()
     win.show()
     exit(app.exec())

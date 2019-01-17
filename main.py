@@ -14,13 +14,14 @@ def lose(windows, score, font):
 def destruction(cords):
     global particles
     numbers = range(-6, 6)
-    for _ in range(100):
+
+    for i in range(100):
         dx = choice(numbers)
         dy = choice(numbers)
         while not(dx and dy):
             dx = choice(numbers)
             dy = choice(numbers)
-        Particle(particles, cords, dx, dy)
+        Particle(particles, cords, dx, dy, choice([2, 3, 4, 5]) * 10)
 
 
 def main():
@@ -65,6 +66,9 @@ def main():
 
     # game score:
     score = 0
+
+    # is paused:
+    pause = False
 
     # FULL SCREEN
     windows = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -119,12 +123,15 @@ def main():
                 enemy = SpaceEnemy(cords, enemy_speed,
                                    ENEMY_SPACESHIP_IMAGE, (width // 2, height // 2))
                 enemies_sprites.add(enemy)
-
             # fire button
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 bullet = Bullet((hero.rect.x + 40, hero.rect.y + 40),
                                 pygame.mouse.get_pos())
                 bullets_sprites.add(bullet)
+            # pause
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    pause = True
 
         # get pressed keys
         keys = pygame.key.get_pressed()
@@ -144,7 +151,10 @@ def main():
         if keys[pygame.K_d]:
             x += speed
         windows.fill((0, 0, 0))
-        print_text(windows, "score: {}".format(score), font)
+        if pause:
+            print_text(windows, "pause, SPACE to continue", font)
+        else:
+            print_text(windows, "score: {}".format(score), font)
         hero.move((x, y))
 
         # gravitation effect
@@ -221,6 +231,18 @@ def main():
             particles.update()
             particles.draw(windows)
             pygame.display.update()
+        if pause:
+                while pygame.event.wait().type != pygame.KEYDOWN:
+                    pass
+                pause = False
+    if difficulty:
+        with open('score.txt', mode="r", encoding='utf-8') as f:
+            lines = f.readlines()
+            if int(lines[difficulty - 1]) < score:
+                lines[difficulty - 1] = str(score) + '\n'
+        with open('score.txt', mode="w", encoding='utf-8') as f:
+            for i in lines:
+                f.write(i)
     pygame.quit()
 
 
