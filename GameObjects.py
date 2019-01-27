@@ -75,7 +75,7 @@ class Earth(NeutralObject):
 # appears with hard difficylty
 class Meteor(NeutralObject):
     def __init__(self, cords, image):
-        super().__init__(cords, choice([2, 3, 4]), image)
+        super().__init__(cords, choice([4, 5, 6]), image)
 
     # direction: from top to bottom
     def move(self):
@@ -167,4 +167,3 @@ class Particle(pygame.sprite.Sprite):
                     + np.power((self.rect.y - self.start_point[1]), 2))
         if r > self.range_of_fly:
             self.kill()
-

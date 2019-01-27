@@ -32,7 +32,10 @@ class Window(QMainWindow):
             self.show()
         elif x == 'Обучение':
             self.hide()
-            tutorial()
+            try:
+                tutorial()
+            except Exception as err:
+                print(err)
             sleep(0.5)
             self.show()
         elif x == 'Настройки' and not Window.is_settings:

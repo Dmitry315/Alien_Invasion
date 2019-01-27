@@ -12,7 +12,7 @@ def destruction(cords):
         while not(dx and dy):
             dx = choice(numbers)
             dy = choice(numbers)
-        Particle(particles, cords, dx, dy)
+        Particle(particles, cords, dx, dy, choice([2, 3, 4, 5]) * 10)
 
 
 def tutorial():
