@@ -27,15 +27,16 @@ class Window(QMainWindow):
         x = self.sender().text()
         if x == 'Играть':
             self.hide()
-            main()
+            try:
+                main()
+            except Exception as err:
+                print(err)
             sleep(0.5)
             self.show()
         elif x == 'Обучение':
             self.hide()
-            try:
-                tutorial()
-            except Exception as err:
-                print(err)
+            tutorial()
+
             sleep(0.5)
             self.show()
         elif x == 'Настройки' and not Window.is_settings:

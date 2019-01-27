@@ -49,8 +49,9 @@ def main():
         spawn = 0
     ################################################################
     # init Earth
-    earth_cords = (width // 2 - 45, height // 2 - 50)
+    earth_cords = (width // 2 - 320 // 5, height // 2 - 258 // 4)
     earth = Earth(earth_cords, EARTH_IMAGE)
+    pygame.time.set_timer(EARTH_ROTATE, 75)
 
     # init hero
     hero = Hero((width // 5, height // 2), speed, PLAYER_IMAGE)
@@ -116,20 +117,22 @@ def main():
 
         # check events
         for event in pygame.event.get():
+            if event.type == EARTH_ROTATE:
+                earth.update()
             if event.type == METEOR_APPEAR:
                 meteor = Meteor((choice(meteor_spawn), -100), METEOR_IMAGE)
-            elif event.type == ENEMY_APPEAR:
+            if event.type == ENEMY_APPEAR:
                 cords = choice(enemy_spawn)
                 enemy = SpaceEnemy(cords, enemy_speed,
                                    ENEMY_SPACESHIP_IMAGE, (width // 2, height // 2))
                 enemies_sprites.add(enemy)
             # fire button
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 bullet = Bullet((hero.rect.x + 40, hero.rect.y + 40),
                                 pygame.mouse.get_pos())
                 bullets_sprites.add(bullet)
             # pause
-            elif event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     pause = True
 
