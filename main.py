@@ -38,6 +38,7 @@ def main():
         else:
             difficulty = diff
 
+
     # enemy speed
     enemy_speed = 2.5 if difficulty == 3 else 2
 
@@ -61,6 +62,13 @@ def main():
     # init game
     pygame.init()
     pygame.mouse.set_pos(0, 0)
+
+    # init mixer
+    pygame.mixer.pre_init(44100, 16, 2, 4096)
+    pygame.mixer.init()
+    fire = pygame.mixer.Sound('sounds/fire.wav')
+    destruction_sound = pygame.mixer.Sound('sounds/destuction.wav')
+
 
     # init font
     font = pygame.font.Font(None, 50)
@@ -128,6 +136,7 @@ def main():
                 enemies_sprites.add(enemy)
             # fire button
             if event.type == pygame.MOUSEBUTTONDOWN:
+                fire.play(1)
                 bullet = Bullet((hero.rect.x + 40, hero.rect.y + 40),
                                 pygame.mouse.get_pos())
                 bullets_sprites.add(bullet)
@@ -191,6 +200,7 @@ def main():
                 if meteor:
                     if pygame.sprite.collide_mask(i, meteor):
                         del_list.append(i)
+                        destruction_sound.play(1)
                 if pygame.sprite.collide_mask(i, earth) and run:
                     run = False
                     lose(windows, score, font)
@@ -226,8 +236,10 @@ def main():
                 score += 100 * difficulty
         # delete collided enemies
         for i in del_list:
+            destruction_sound.play(1)
             destruction((i.rect.x + 20, i.rect.y + 20))
             enemies_sprites.remove(i)
+
         if run:
             # hero follow mouse
             hero.draw_object(windows, pygame.mouse.get_pos())

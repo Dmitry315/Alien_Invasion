@@ -38,6 +38,12 @@ def tutorial():
     # init game
     pygame.init()
 
+    # init mixer
+    pygame.mixer.pre_init(44100, 16, 2, 4096)
+    pygame.mixer.init()
+    fire = pygame.mixer.Sound('sounds/fire.wav')
+    destruction_sound = pygame.mixer.Sound('sounds/destuction.wav')
+
     # init font
     font = pygame.font.Font(None, 50)
 
@@ -64,6 +70,7 @@ def tutorial():
                     dialog_count += 1
             # fire button
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                fire.play(1)
                 bullets_sprites.add(Bullet((hero.rect.x + 40, hero.rect.y + 40),
                                            pygame.mouse.get_pos()))
                 if dialog_count == 2:
@@ -121,12 +128,14 @@ def tutorial():
                 # check collision for bullets
                 if meteor:
                     if pygame.sprite.collide_mask(i, meteor):
+                        destruction_sound.play(1)
                         del_list.append(i)
                 if pygame.sprite.collide_mask(i, earth) and dialog_count >= 4:
                     del_list.append(i)
                 # collision with bullets
                 enemy = pygame.sprite.spritecollideany(i, enemies_sprites)
                 if enemy:
+                    destruction_sound.play(1)
                     destruction((enemy.rect.x + 20, enemy.rect.y + 20))
                     enemies_sprites.remove(enemy)
                     del_list.append(i)
@@ -173,6 +182,7 @@ def tutorial():
             meteor.draw_object(windows)
             enemy = pygame.sprite.spritecollideany(meteor, enemies_sprites)
             if enemy:
+                destruction_sound.play(1)
                 destruction((enemy.rect.x + 20, enemy.rect.y + 20))
                 enemies_sprites = pygame.sprite.Group()
             if pygame.sprite.collide_mask(meteor, hero):
