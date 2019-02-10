@@ -27,16 +27,15 @@ class Window(QMainWindow):
         x = self.sender().text()
         if x == 'Играть':
             self.hide()
-            try:
-                main()
-            except Exception as err:
-                print(err)
+            main()
             sleep(0.5)
             self.show()
         elif x == 'Обучение':
             self.hide()
-            tutorial()
-
+            try:
+                tutorial()
+            except Exception as err:
+                print(err)
             sleep(0.5)
             self.show()
         elif x == 'Настройки' and not Window.is_settings:
@@ -58,6 +57,15 @@ class Settings(QDialog):
         uic.loadUi('settings.ui', self)
         self.apply.clicked.connect(self.apply_settings)
         self.cancel.clicked.connect(self.cancel_settings)
+        with open('game_settings.txt', mode='r', encoding='utf-8') as f:
+            lines = f.readlines()
+        try:
+            self.fps.setValue(int(lines[0].split()[1]))
+            self.difficulty.setCurrentIndex(int(lines[1].split()[1]))
+        except Exception as err:
+            print(err)
+            self.fps.setValue(60)
+            self.difficulty.setCurrentIndex(1)
 
     def apply_settings(self):
         fps1 = self.fps.value()
@@ -86,9 +94,14 @@ class LeaderBoard(QDialog):
     def update_board(self):
         with open('score.txt', mode='r', encoding='utf-8') as f:
             lines = f.readlines()
-        self.easy.setText(lines[0][:-1])
-        self.medium.setText(lines[1][:-1])
-        self.hard.setText(lines[2][:-1])
+        if len(lines) != 3:
+            lines = ['0', '0', '0']
+            with open('score.txt', mode='w', encoding='utf-8') as f:
+                for i in range(3):
+                    f.write('0\n')
+        self.easy.setText(lines[0].strip('\n'))
+        self.medium.setText(lines[1].strip('\n'))
+        self.hard.setText(lines[2].strip('\n'))
 
     @classmethod
     def show_widget(cls):

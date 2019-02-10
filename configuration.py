@@ -1,21 +1,11 @@
 import pygame
 from ctypes import windll
 
-# default settings
-####################
-# frames per second
-fps = 60
-difficulty = 1
-enemy_speed = 2
-# enemy spawn rate
-spawn = 1700
-####################
-bullet_radius = 3
+BULLET_RADIUS = 3
 # add player speed
-speed = 6
+SPEED = 6
 # window size
 size = width, height = windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)
-
 
 # load images
 PLAYER_IMAGE = pygame.image.load('images/spaceship.png')

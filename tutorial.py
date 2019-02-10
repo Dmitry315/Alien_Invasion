@@ -16,8 +16,11 @@ def destruction(cords):
 
 
 def tutorial():
+    with open('game_settings.txt', encoding='utf-8', mode='r') as f:
+        lines = f.readlines()
+        fps = int(lines[0].split()[1])
     # init hero
-    hero = Hero((width // 6, height // 2), speed, PLAYER_IMAGE)
+    hero = Hero((width // 6, height // 2), SPEED, PLAYER_IMAGE)
 
     # init Earth
     earth_cords = (width // 2 - 50, height // 2 - 50)
@@ -87,16 +90,16 @@ def tutorial():
         x = 0
         y = 0
         if keys[pygame.K_w]:
-            y -= speed
+            y -= SPEED
             w = 1 if dialog_count == 1 else 0
         if keys[pygame.K_a]:
-            x -= speed
+            x -= SPEED
             a = 1 if dialog_count == 1 else 0
         if keys[pygame.K_s]:
-            y += speed
+            y += SPEED
             s = 1 if dialog_count == 1 else 0
         if keys[pygame.K_d]:
-            x += speed
+            x += SPEED
             d = 1 if dialog_count == 1 else 0
         if w and a and s and d and dialog_count == 1:
             dialog_count = 2

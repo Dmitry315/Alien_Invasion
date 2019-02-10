@@ -26,7 +26,7 @@ def destruction(cords):
 
 def main():
     ################################################################
-    global enemy_speed, bullet_radius, spawn, speed, difficulty, fps, particles
+    global SPEED, particles
     with open('game_settings.txt', encoding='utf-8', mode='r') as f:
         lines = f.readlines()
         fps = int(lines[0].split()[1])
@@ -55,7 +55,7 @@ def main():
     pygame.time.set_timer(EARTH_ROTATE, 75)
 
     # init hero
-    hero = Hero((width // 5, height // 2), speed, PLAYER_IMAGE)
+    hero = Hero((width // 5, height // 2), SPEED, PLAYER_IMAGE)
 
     clock = pygame.time.Clock()
 
@@ -68,7 +68,6 @@ def main():
     pygame.mixer.init()
     fire = pygame.mixer.Sound('sounds/fire.wav')
     destruction_sound = pygame.mixer.Sound('sounds/destuction.wav')
-
 
     # init font
     font = pygame.font.Font(None, 50)
@@ -154,14 +153,14 @@ def main():
         # move hero with WASD
         x = 0
         y = 0
-        if keys[pygame.K_w]:
-            y -= speed
-        if keys[pygame.K_a]:
-            x -= speed
-        if keys[pygame.K_s]:
-            y += speed
-        if keys[pygame.K_d]:
-            x += speed
+        if keys[pygame.K_w] and hero.rect.y > SPEED:
+            y -= SPEED
+        if keys[pygame.K_a] and hero.rect.x > SPEED:
+            x -= SPEED
+        if keys[pygame.K_s] and hero.rect.y < height - SPEED - 80:
+            y += SPEED
+        if keys[pygame.K_d] and hero.rect.x < width - SPEED - 80:
+            x += SPEED
         windows.fill((0, 0, 0))
         if pause:
             print_text(windows, "pause, SPACE to continue", font)

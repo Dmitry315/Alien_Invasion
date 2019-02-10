@@ -107,9 +107,9 @@ class Bullet(pygame.sprite.Sprite):
         angle = 360 - calculate_angle(cords[0], cords[1], mouse_cord[0], mouse_cord[1])
         self.speed_x = self.speed * np.cos(angle / 180 * np.pi)
         self.speed_y = self.speed * np.sin(angle / 180 * np.pi)
-        self.image = pygame.Surface((2 * bullet_radius, 2 * bullet_radius), pygame.SRCALPHA, 32)
-        pygame.draw.circle(self.image, (255, 0, 0), (bullet_radius, bullet_radius), bullet_radius)
-        self.rect = pygame.Rect(cords[0], cords[1], 2 * bullet_radius, 2 * bullet_radius)
+        self.image = pygame.Surface((2 * BULLET_RADIUS, 2 * BULLET_RADIUS), pygame.SRCALPHA, 32)
+        pygame.draw.circle(self.image, (255, 0, 0), (BULLET_RADIUS, BULLET_RADIUS), BULLET_RADIUS)
+        self.rect = pygame.Rect(cords[0], cords[1], 2 * BULLET_RADIUS, 2 * BULLET_RADIUS)
         self.rect.x = cords[0]
         self.rect.y = cords[1]
         self.mask = pygame.mask.from_surface(self.image)
