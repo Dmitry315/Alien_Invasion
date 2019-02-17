@@ -50,9 +50,9 @@ def main():
         spawn = 0
     ################################################################
     # init Earth
-    earth_cords = (width // 2 - 320 // 5, height // 2 - 258 // 4)
+    earth_cords = (width // 2 - 45, height // 2 - 50)
     earth = Earth(earth_cords, EARTH_IMAGE)
-    pygame.time.set_timer(EARTH_ROTATE, 75)
+    # pygame.time.set_timer(EARTH_ROTATE, 75)
 
     # init hero
     hero = Hero((width // 5, height // 2), SPEED, PLAYER_IMAGE)
@@ -124,8 +124,8 @@ def main():
 
         # check events
         for event in pygame.event.get():
-            if event.type == EARTH_ROTATE:
-                earth.update()
+            # if event.type == EARTH_ROTATE:
+            #     earth.update()
             if event.type == METEOR_APPEAR:
                 meteor = Meteor((choice(meteor_spawn), -100), METEOR_IMAGE)
             if event.type == ENEMY_APPEAR:

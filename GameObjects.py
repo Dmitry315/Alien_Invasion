@@ -65,25 +65,26 @@ class NeutralObject(GameObject):
 
 class Earth(NeutralObject):
     def __init__(self, cords, image):
-        # super().__init__(cords, 0, image)
-        self.frames = []
-        self.cut_sheet(image)
-        self.cur_frame = 0
-        self.image = self.frames[self.cur_frame]
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = cords
-        self.mask = pygame.mask.from_surface(self.image)
+        super().__init__(cords, 0, image)
+        # self.frames = []
+        # self.cut_sheet(image)
+        # self.cur_frame = 0
+        # self.image = self.frames[self.cur_frame]
+        # self.rect = self.image.get_rect()
+        # self.rect.x, self.rect.y = cords
+        # self.mask = pygame.mask.from_surface(self.image)
 
-    def cut_sheet(self, sheet):
-        for i in range(5):
-            for j in range(4):
-                frame_location = (640 // 5 * i, 512 // 4 * j)
-                self.frames.append(sheet.subsurface(pygame.Rect(frame_location, (640 // 5, 512 // 4))))
-        self.frames.pop(-1)
+    # def cut_sheet(self, sheet):
+    #     for i in range(5):
+    #         for j in range(4):
+    #             frame_location = (640 // 5 * i, 512 // 4 * j)
+    #             self.frames.append(sheet.subsurface(pygame.Rect(frame_location, (640 // 5, 512 // 4))))
+    #     self.frames.pop(-1)
 
     def update(self):
-        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-        self.image = self.frames[self.cur_frame]
+        # self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+        # self.image = self.frames[self.cur_frame]
+        pass
 
     # Earth doesn't move in this game
     def move(self):

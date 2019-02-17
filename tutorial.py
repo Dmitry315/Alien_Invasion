@@ -25,7 +25,7 @@ def tutorial():
     # init Earth
     earth_cords = (width // 2 - 50, height // 2 - 50)
     earth = Earth(earth_cords, EARTH_IMAGE)
-    pygame.time.set_timer(EARTH_ROTATE, 75)
+    # pygame.time.set_timer(EARTH_ROTATE, 75)
 
     # init meteor
     meteor = Meteor((width * 3 // 4, -100), METEOR_IMAGE)
@@ -64,8 +64,8 @@ def tutorial():
         clock.tick(fps)
         # check events
         for event in pygame.event.get():
-            if event.type == EARTH_ROTATE:
-                earth.update()
+            # if event.type == EARTH_ROTATE:
+            #     earth.update()
             if event.type == pygame.QUIT:
                 run = False
             elif event.type == pygame.KEYDOWN:
